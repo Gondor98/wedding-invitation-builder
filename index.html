@@ -15,6 +15,13 @@
                 <h1 class="app-title">&#128146; Wedding Invitation Builder</h1>
             </div>
             <div class="toolbar-center">
+                <div class="theme-selector">
+                    <label for="theme-select" class="theme-label">&#127912; Theme:</label>
+                    <select id="theme-select" class="theme-dropdown" onchange="changeTheme(this.value)">
+                        <option value="luxurious-blue">Luxurious Blue</option>
+                        <option value="spanish-garden">Spanish Garden</option>
+                    </select>
+                </div>
                 <button id="btn-add-section" class="toolbar-btn" title="Add Section">
                     <span class="icon">+</span> Add Section
                 </button>

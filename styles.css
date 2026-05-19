@@ -6,16 +6,7 @@
 }
 
 :root {
-    --primary: #1a5c3a;
-    --primary-light: #2d8f5e;
-    --primary-dark: #0e3d25;
-    --gold: #c9a84c;
-    --gold-light: #e8d48b;
-    --bg-cream: #faf8f5;
-    --bg-dark: #1a1a2e;
-    --text-dark: #2c2c2c;
-    --text-muted: #6b6b6b;
-    --border: #e0ddd8;
+    /* Base layout tokens (theme-independent) */
     --shadow: 0 2px 12px rgba(0,0,0,0.08);
     --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
     --radius: 8px;
@@ -23,6 +14,47 @@
     --font-display: 'Playfair Display', serif;
     --font-elegant: 'Cormorant Garamond', serif;
     --font-body: 'Montserrat', sans-serif;
+    --font-script: 'Dancing Script', cursive;
+
+    /* Default theme colors (overridden by theme classes) */
+    --primary: #1a3a6b;
+    --primary-light: #2d5a9e;
+    --primary-dark: #0d1f3d;
+    --gold: #b8965a;
+    --gold-light: #dfc692;
+    --bg-cream: #f5f7fa;
+    --bg-dark: #0d1f3d;
+    --text-dark: #2c2c2c;
+    --text-muted: #6b6b6b;
+    --border: #e0ddd8;
+    --hero-gradient: linear-gradient(135deg, #0d1f3d 0%, #1a3a6b 50%, #0d1f3d 100%);
+    --ornament-color: rgba(184,150,90,0.4);
+}
+
+/* ===== THEME: LUXURIOUS BLUE ===== */
+[data-theme="luxurious-blue"] {
+    --primary: #1a3a6b;
+    --primary-light: #2d5a9e;
+    --primary-dark: #0d1f3d;
+    --gold: #b8965a;
+    --gold-light: #dfc692;
+    --bg-cream: #f5f7fa;
+    --bg-dark: #0d1f3d;
+    --hero-gradient: linear-gradient(135deg, #0d1f3d 0%, #1a3a6b 50%, #0d1f3d 100%);
+    --ornament-color: rgba(184,150,90,0.4);
+}
+
+/* ===== THEME: SPANISH GARDEN ===== */
+[data-theme="spanish-garden"] {
+    --primary: #6b4c2a;
+    --primary-light: #a06b3a;
+    --primary-dark: #3d2a14;
+    --gold: #c4883c;
+    --gold-light: #e8c48a;
+    --bg-cream: #fdf6ee;
+    --bg-dark: #3d2a14;
+    --hero-gradient: linear-gradient(135deg, #3d2a14 0%, #6b4c2a 40%, #4a6b3a 100%);
+    --ornament-color: rgba(196,136,60,0.4);
 }
 
 html, body {
@@ -241,7 +273,7 @@ html, body {
     padding: 80px 30px;
     position: relative;
     overflow: hidden;
-    background-image: linear-gradient(135deg, #0e3d25 0%, #1a5c3a 50%, #0e3d25 100%);
+    background-image: var(--hero-gradient);
 }
 
 .inv-hero::before,
@@ -1141,4 +1173,61 @@ html, body {
     justify-content: center;
     font-size: 0.8rem;
     color: var(--text-muted);
+}
+
+
+/* ===== THEME SELECTOR ===== */
+.theme-selector {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 8px;
+}
+
+.theme-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.theme-dropdown {
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    background: white;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.theme-dropdown:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* Theme-specific preview adjustments */
+[data-theme="spanish-garden"] .inv-hero::before,
+[data-theme="spanish-garden"] .inv-hero::after {
+    opacity: 0.25;
+}
+
+[data-theme="spanish-garden"] .inv-card {
+    background: linear-gradient(135deg, #fefcf8 0%, #f8f0e4 100%);
+    border-color: rgba(107,76,42,0.15);
+}
+
+[data-theme="spanish-garden"] .inv-card-note {
+    border-top-color: rgba(107,76,42,0.1);
+}
+
+[data-theme="luxurious-blue"] .inv-card {
+    background: linear-gradient(135deg, #f8fafd 0%, #eef3f9 100%);
+    border-color: rgba(26,58,107,0.12);
+}
+
+[data-theme="luxurious-blue"] .inv-card-note {
+    border-top-color: rgba(26,58,107,0.1);
 }

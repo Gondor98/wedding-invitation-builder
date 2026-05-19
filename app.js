@@ -97,6 +97,28 @@ let musicSettings = {
     fileName: ''
 };
 
+// Theme settings
+let currentTheme = 'luxurious-blue';
+
+// ===== THEME FUNCTIONS =====
+function changeTheme(theme) {
+    currentTheme = theme;
+    document.documentElement.setAttribute('data-theme', theme);
+    document.getElementById('preview-frame').setAttribute('data-theme', theme);
+    // Save preference
+    localStorage.setItem('wedding-invitation-theme', theme);
+}
+
+function loadTheme() {
+    const saved = localStorage.getItem('wedding-invitation-theme');
+    if (saved) {
+        currentTheme = saved;
+    }
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    document.getElementById('preview-frame').setAttribute('data-theme', currentTheme);
+    document.getElementById('theme-select').value = currentTheme;
+}
+
 // ===== UTILITY FUNCTIONS =====
 function generateId() {
     return 'sec_' + Math.random().toString(36).substr(2, 9);
@@ -799,7 +821,7 @@ function exportHTML() {
 </head>
 <body>
     ${musicHtml}
-    <div class="invitation-wrapper">
+    <div class="invitation-wrapper" data-theme="${currentTheme}">
         ${previewHtml}
     </div>
     ${musicScript}
@@ -817,12 +839,14 @@ function exportHTML() {
 
 function getExportStyles() {
     return `
-        :root { --primary: #1a5c3a; --primary-light: #2d8f5e; --primary-dark: #0e3d25; --gold: #c9a84c; --gold-light: #e8d48b; --bg-cream: #faf8f5; --text-dark: #2c2c2c; --text-muted: #6b6b6b; --border: #e0ddd8; --radius: 8px; --radius-lg: 16px; --font-display: 'Playfair Display', serif; --font-elegant: 'Cormorant Garamond', serif; --font-body: 'Montserrat', sans-serif; --font-script: 'Dancing Script', cursive; }
+        :root { --primary: #1a3a6b; --primary-light: #2d5a9e; --primary-dark: #0d1f3d; --gold: #b8965a; --gold-light: #dfc692; --bg-cream: #f5f7fa; --text-dark: #2c2c2c; --text-muted: #6b6b6b; --border: #e0ddd8; --radius: 8px; --radius-lg: 16px; --font-display: 'Playfair Display', serif; --font-elegant: 'Cormorant Garamond', serif; --font-body: 'Montserrat', sans-serif; --font-script: 'Dancing Script', cursive; --hero-gradient: linear-gradient(135deg, #0d1f3d 0%, #1a3a6b 50%, #0d1f3d 100%); --ornament-color: rgba(184,150,90,0.4); }
+        [data-theme="luxurious-blue"] { --primary: #1a3a6b; --primary-light: #2d5a9e; --primary-dark: #0d1f3d; --gold: #b8965a; --gold-light: #dfc692; --bg-cream: #f5f7fa; --hero-gradient: linear-gradient(135deg, #0d1f3d 0%, #1a3a6b 50%, #0d1f3d 100%); --ornament-color: rgba(184,150,90,0.4); }
+        [data-theme="spanish-garden"] { --primary: #6b4c2a; --primary-light: #a06b3a; --primary-dark: #3d2a14; --gold: #c4883c; --gold-light: #e8c48a; --bg-cream: #fdf6ee; --hero-gradient: linear-gradient(135deg, #3d2a14 0%, #6b4c2a 40%, #4a6b3a 100%); --ornament-color: rgba(196,136,60,0.4); }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: var(--font-body); background: #e8e5e0; display: flex; justify-content: center; padding: 20px; min-height: 100vh; }
         .invitation-wrapper { width: 100%; max-width: 480px; background: white; border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
         .inv-section { position: relative; }
-        .inv-hero { background: var(--primary-dark); color: white; text-align: center; padding: 80px 30px; position: relative; overflow: hidden; background-image: linear-gradient(135deg, #0e3d25 0%, #1a5c3a 50%, #0e3d25 100%); }
+        .inv-hero { background: var(--primary-dark); color: white; text-align: center; padding: 80px 30px; position: relative; overflow: hidden; background-image: var(--hero-gradient); }
         .inv-hero::before, .inv-hero::after { content: ''; position: absolute; width: 150px; height: 150px; background-size: contain; background-repeat: no-repeat; opacity: 0.3; }
         .inv-hero::before { top: 0; right: 0; background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M90,10 Q95,30 80,50 Q65,70 50,60 Q35,50 40,30 Q45,10 60,5 Q75,0 90,10Z" fill="rgba(201,168,76,0.4)"/></svg>'); }
         .inv-hero::after { bottom: 0; left: 0; background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M10,90 Q5,70 20,50 Q35,30 50,40 Q65,50 60,70 Q55,90 40,95 Q25,100 10,90Z" fill="rgba(201,168,76,0.4)"/></svg>'); }
@@ -861,7 +885,9 @@ function getExportStyles() {
         .inv-invitation { padding: 60px 24px; background: white; text-align: center; }
         .inv-invitation-intro { font-family: var(--font-elegant); font-size: 1.1rem; color: var(--text-muted); margin-bottom: 8px; font-style: italic; }
         .inv-invitation-subtitle { font-family: var(--font-elegant); font-size: 0.95rem; color: var(--text-muted); margin-bottom: 40px; }
-        .inv-card { background: linear-gradient(135deg, #f8fdf9 0%, #eef7f0 100%); border: 1px solid rgba(26,92,58,0.15); border-radius: var(--radius-lg); padding: 32px 24px; margin-bottom: 24px; }
+        .inv-card { background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 3%, white) 0%, color-mix(in srgb, var(--primary) 8%, white) 100%); border: 1px solid color-mix(in srgb, var(--primary) 15%, transparent); border-radius: var(--radius-lg); padding: 32px 24px; margin-bottom: 24px; }
+        [data-theme="luxurious-blue"] .inv-card { background: linear-gradient(135deg, #f8fafd 0%, #eef3f9 100%); border-color: rgba(26,58,107,0.12); }
+        [data-theme="spanish-garden"] .inv-card { background: linear-gradient(135deg, #fefcf8 0%, #f8f0e4 100%); border-color: rgba(107,76,42,0.15); }
         .inv-card-label { font-family: var(--font-body); font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: var(--primary); margin-bottom: 16px; font-weight: 600; }
         .inv-card-time { font-family: var(--font-display); font-size: 1.1rem; color: var(--primary-dark); margin-bottom: 8px; }
         .inv-card-date { font-family: var(--font-elegant); font-size: 0.95rem; color: var(--text-muted); margin-bottom: 16px; }
@@ -904,7 +930,7 @@ function getExportStyles() {
 
 // ===== SAVE / LOAD =====
 function saveDraft() {
-    const data = JSON.stringify({ sections, musicSettings });
+    const data = JSON.stringify({ sections, musicSettings, currentTheme });
     localStorage.setItem('wedding-invitation-draft', data);
     alert('Draft saved successfully!');
 }
@@ -914,7 +940,7 @@ function loadDraft() {
     if (data) {
         try {
             const parsed = JSON.parse(data);
-            if (parsed.sections) { sections = parsed.sections; musicSettings = parsed.musicSettings || musicSettings; }
+            if (parsed.sections) { sections = parsed.sections; musicSettings = parsed.musicSettings || musicSettings; if (parsed.currentTheme) { currentTheme = parsed.currentTheme; } }
             else { sections = parsed; }
             renderAll();
             updateMusicButton();
@@ -957,11 +983,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (saved) {
         try {
             const parsed = JSON.parse(saved);
-            if (parsed.sections) { sections = parsed.sections; musicSettings = parsed.musicSettings || musicSettings; }
+            if (parsed.sections) { sections = parsed.sections; musicSettings = parsed.musicSettings || musicSettings; if (parsed.currentTheme) { currentTheme = parsed.currentTheme; } }
             else { sections = parsed; }
         } catch(e) {}
     }
 
+    loadTheme();
     renderAll();
     updateMusicButton();
 });
