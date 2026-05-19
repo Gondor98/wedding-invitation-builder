@@ -925,28 +925,133 @@ function getExportStyles() {
         .music-toggle:hover { transform: scale(1.1); }
         .music-toggle.playing { animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { box-shadow: 0 4px 16px rgba(0,0,0,0.2); } 50% { box-shadow: 0 4px 24px rgba(201,168,76,0.5); } }
+        /* Decorations */
+        .inv-section { position: relative; overflow: hidden; }
+        .inv-formal-invite::before, .inv-invitation::before, .inv-gallery::before, .inv-thank-you::before { content: ''; position: absolute; top: 16px; left: 16px; right: 16px; bottom: 16px; border: 1px solid var(--gold); opacity: 0.15; border-radius: 4px; pointer-events: none; }
+        .inv-love-story { background: var(--bg-cream); background-image: radial-gradient(ellipse at 0% 0%, color-mix(in srgb, var(--gold) 5%, transparent) 0%, transparent 50%), radial-gradient(ellipse at 100% 100%, color-mix(in srgb, var(--gold) 5%, transparent) 0%, transparent 50%); }
+        .inv-gallery { background: linear-gradient(180deg, white 0%, var(--bg-cream) 100%); }
+        .inv-formal-invite { background: white; background-image: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--primary) 3%, white) 0%, white 70%); }
+        .inv-invitation { background: linear-gradient(180deg, var(--bg-cream) 0%, white 30%, white 70%, var(--bg-cream) 100%); }
+        .inv-thank-you { background: var(--bg-cream); background-image: radial-gradient(ellipse at 50% 100%, color-mix(in srgb, var(--gold) 6%, transparent) 0%, transparent 60%); }
+        .inv-rsvp { background: var(--primary-dark); background-image: radial-gradient(ellipse at 20% 50%, color-mix(in srgb, var(--primary) 30%, transparent) 0%, transparent 50%), radial-gradient(ellipse at 80% 50%, color-mix(in srgb, var(--gold) 8%, transparent) 0%, transparent 50%); }
+        [data-theme="luxurious-blue"] .inv-love-story { background-image: radial-gradient(ellipse at 0% 0%, rgba(26,58,107,0.04) 0%, transparent 50%), radial-gradient(ellipse at 100% 100%, rgba(184,150,90,0.05) 0%, transparent 50%); }
+        [data-theme="spanish-garden"] .inv-love-story { background-image: radial-gradient(ellipse at 0% 0%, rgba(107,76,42,0.04) 0%, transparent 50%), radial-gradient(ellipse at 100% 100%, rgba(74,107,58,0.05) 0%, transparent 50%); }
+        [data-theme="spanish-garden"] .inv-card { background: linear-gradient(135deg, #fefcf8 0%, #f8f0e4 100%); border-color: rgba(107,76,42,0.12); }
     `;
 }
 
-// ===== SAVE / LOAD =====
-function saveDraft() {
-    const data = JSON.stringify({ sections, musicSettings, currentTheme });
-    localStorage.setItem('wedding-invitation-draft', data);
-    alert('Draft saved successfully!');
+// ===== SAVE / LOAD (Named Drafts) =====
+function getAllDrafts() {
+    const raw = localStorage.getItem('wedding-drafts-collection');
+    if (!raw) return [];
+    try { return JSON.parse(raw); } catch(e) { return []; }
 }
 
-function loadDraft() {
-    const data = localStorage.getItem('wedding-invitation-draft');
-    if (data) {
-        try {
-            const parsed = JSON.parse(data);
-            if (parsed.sections) { sections = parsed.sections; musicSettings = parsed.musicSettings || musicSettings; if (parsed.currentTheme) { currentTheme = parsed.currentTheme; } }
-            else { sections = parsed; }
-            renderAll();
-            updateMusicButton();
-            alert('Draft loaded successfully!');
-        } catch(e) { alert('Error loading draft.'); }
-    } else { alert('No saved draft found.'); }
+function saveAllDrafts(drafts) {
+    localStorage.setItem('wedding-drafts-collection', JSON.stringify(drafts));
+}
+
+function openSaveModal() {
+    document.getElementById('save-draft-name').value = '';
+    openModal('modal-save-draft');
+    // Focus the input
+    setTimeout(() => document.getElementById('save-draft-name').focus(), 100);
+}
+
+function saveDraftWithName() {
+    const nameInput = document.getElementById('save-draft-name');
+    const name = nameInput.value.trim();
+    if (!name) {
+        alert('Please enter a name for this draft.');
+        nameInput.focus();
+        return;
+    }
+
+    const drafts = getAllDrafts();
+    
+    // Check if name already exists
+    const existingIndex = drafts.findIndex(d => d.name === name);
+    const draftData = {
+        name: name,
+        savedAt: new Date().toISOString(),
+        theme: currentTheme,
+        sections: JSON.parse(JSON.stringify(sections)),
+        musicSettings: JSON.parse(JSON.stringify(musicSettings))
+    };
+
+    if (existingIndex >= 0) {
+        if (confirm('A draft with this name already exists. Overwrite it?')) {
+            drafts[existingIndex] = draftData;
+        } else {
+            return;
+        }
+    } else {
+        drafts.unshift(draftData);
+    }
+
+    saveAllDrafts(drafts);
+    closeModal('modal-save-draft');
+    alert('Draft "' + name + '" saved successfully!');
+}
+
+function openLoadModal() {
+    const drafts = getAllDrafts();
+    const listEl = document.getElementById('drafts-list');
+
+    if (drafts.length === 0) {
+        listEl.innerHTML = '<div class="no-drafts">No saved drafts yet.<br><small>Use the Save button to create your first draft.</small></div>';
+    } else {
+        listEl.innerHTML = drafts.map((draft, i) => {
+            const date = new Date(draft.savedAt);
+            const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const themeLabel = draft.theme === 'spanish-garden' ? 'Spanish Garden' : 'Luxurious Blue';
+            return `
+                <div class="draft-item">
+                    <div class="draft-item-info">
+                        <div class="draft-item-name">${escapeHtml(draft.name)}</div>
+                        <div class="draft-item-date">${dateStr} &bull; ${themeLabel} &bull; ${draft.sections ? draft.sections.length : 0} sections</div>
+                    </div>
+                    <div class="draft-item-actions">
+                        <button class="btn-load-draft" onclick="loadDraftByIndex(${i})">Load</button>
+                        <button class="btn-delete-draft" onclick="deleteDraftByIndex(${i})">Delete</button>
+                    </div>
+                </div>`;
+        }).join('');
+    }
+
+    openModal('modal-load-draft');
+}
+
+function loadDraftByIndex(index) {
+    const drafts = getAllDrafts();
+    if (!drafts[index]) return;
+
+    const draft = drafts[index];
+    if (!confirm('Load draft "' + draft.name + '"? Any unsaved changes will be lost.')) return;
+
+    sections = draft.sections || sections;
+    musicSettings = draft.musicSettings || musicSettings;
+    if (draft.theme) {
+        currentTheme = draft.theme;
+        document.getElementById('theme-select').value = currentTheme;
+        changeTheme(currentTheme);
+    }
+
+    closeModal('modal-load-draft');
+    renderAll();
+    updateMusicButton();
+}
+
+function deleteDraftByIndex(index) {
+    const drafts = getAllDrafts();
+    if (!drafts[index]) return;
+
+    if (!confirm('Delete draft "' + drafts[index].name + '"? This cannot be undone.')) return;
+
+    drafts.splice(index, 1);
+    saveAllDrafts(drafts);
+    // Re-render the list
+    openLoadModal();
 }
 
 // ===== FULL PREVIEW =====
@@ -969,8 +1074,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('btn-add-section').addEventListener('click', () => openModal('modal-add-section'));
     document.getElementById('btn-preview').addEventListener('click', showFullPreview);
     document.getElementById('btn-export').addEventListener('click', exportHTML);
-    document.getElementById('btn-save').addEventListener('click', saveDraft);
-    document.getElementById('btn-load').addEventListener('click', loadDraft);
+    document.getElementById('btn-save').addEventListener('click', openSaveModal);
+    document.getElementById('btn-load').addEventListener('click', openLoadModal);
     document.getElementById('btn-music').addEventListener('click', openMusicModal);
     document.getElementById('btn-save-section').addEventListener('click', saveCurrentSection);
 
@@ -978,15 +1083,9 @@ document.addEventListener('DOMContentLoaded', function() {
         card.addEventListener('click', function() { addSection(this.dataset.type); });
     });
 
-    // Load saved draft
-    const saved = localStorage.getItem('wedding-invitation-draft');
-    if (saved) {
-        try {
-            const parsed = JSON.parse(saved);
-            if (parsed.sections) { sections = parsed.sections; musicSettings = parsed.musicSettings || musicSettings; if (parsed.currentTheme) { currentTheme = parsed.currentTheme; } }
-            else { sections = parsed; }
-        } catch(e) {}
-    }
+    // Load last used theme
+    const savedTheme = localStorage.getItem('wedding-invitation-theme');
+    if (savedTheme) currentTheme = savedTheme;
 
     loadTheme();
     renderAll();

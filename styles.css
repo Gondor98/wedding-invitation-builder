@@ -1231,3 +1231,257 @@ html, body {
 [data-theme="luxurious-blue"] .inv-card-note {
     border-top-color: rgba(26,58,107,0.1);
 }
+
+
+/* ===== SECTION DECORATIONS ===== */
+
+/* Subtle pattern overlay for sections */
+.inv-section::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5 L35 15 L30 25 L25 15Z' fill='%23000' fill-opacity='0.4'/%3E%3C/svg%3E");
+    background-size: 60px 60px;
+}
+
+.inv-hero::after,
+.inv-rsvp::after {
+    display: none;
+}
+
+/* Ornamental corner flourishes on light sections */
+.inv-formal-invite::before,
+.inv-invitation::before,
+.inv-gallery::before,
+.inv-thank-you::before {
+    content: '';
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    border: 1px solid var(--gold);
+    opacity: 0.15;
+    border-radius: 4px;
+    pointer-events: none;
+}
+
+/* Corner ornaments */
+.inv-formal-invite,
+.inv-invitation,
+.inv-gallery,
+.inv-thank-you,
+.inv-love-story,
+.inv-custom {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Top-left and bottom-right decorative corners */
+.inv-formal-invite .inv-formal-heading::before,
+.inv-invitation .inv-invitation-intro::before,
+.inv-thank-you .inv-section-label::before {
+    content: '❧';
+    display: block;
+    font-size: 1.5rem;
+    color: var(--gold);
+    opacity: 0.5;
+    margin-bottom: 8px;
+}
+
+/* Decorative separator between sections */
+.inv-section + .inv-section::before {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    margin: 0 auto;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+}
+
+/* Love Story section decoration */
+.inv-love-story {
+    background: var(--bg-cream);
+    background-image: 
+        radial-gradient(ellipse at 0% 0%, color-mix(in srgb, var(--gold) 5%, transparent) 0%, transparent 50%),
+        radial-gradient(ellipse at 100% 100%, color-mix(in srgb, var(--gold) 5%, transparent) 0%, transparent 50%);
+}
+
+/* Gallery section with subtle background */
+.inv-gallery {
+    background: linear-gradient(180deg, white 0%, var(--bg-cream) 100%);
+}
+
+/* Formal invite subtle background */
+.inv-formal-invite {
+    background: white;
+    background-image: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--primary) 3%, white) 0%, white 70%);
+}
+
+/* Invitation section gradient */
+.inv-invitation {
+    background: linear-gradient(180deg, var(--bg-cream) 0%, white 30%, white 70%, var(--bg-cream) 100%);
+}
+
+/* Thank you section */
+.inv-thank-you {
+    background: var(--bg-cream);
+    background-image: radial-gradient(ellipse at 50% 100%, color-mix(in srgb, var(--gold) 6%, transparent) 0%, transparent 60%);
+}
+
+/* Custom section */
+.inv-custom {
+    background: linear-gradient(180deg, white 0%, var(--bg-cream) 100%);
+}
+
+/* RSVP enhanced styling */
+.inv-rsvp {
+    background: var(--primary-dark);
+    background-image: 
+        radial-gradient(ellipse at 20% 50%, color-mix(in srgb, var(--primary) 30%, transparent) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 50%, color-mix(in srgb, var(--gold) 8%, transparent) 0%, transparent 50%);
+}
+
+/* ===== THEME-SPECIFIC DECORATIONS ===== */
+
+/* Luxurious Blue specific */
+[data-theme="luxurious-blue"] .inv-love-story {
+    background: var(--bg-cream);
+    background-image: 
+        radial-gradient(ellipse at 0% 0%, rgba(26,58,107,0.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 100% 100%, rgba(184,150,90,0.05) 0%, transparent 50%);
+}
+
+[data-theme="luxurious-blue"] .inv-formal-invite {
+    background-image: radial-gradient(ellipse at 50% 0%, rgba(26,58,107,0.03) 0%, white 70%);
+}
+
+[data-theme="luxurious-blue"] .inv-rsvp {
+    background: var(--primary-dark);
+    background-image: 
+        radial-gradient(ellipse at 20% 50%, rgba(26,58,107,0.4) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(184,150,90,0.08) 0%, transparent 40%);
+}
+
+/* Spanish Garden specific */
+[data-theme="spanish-garden"] .inv-love-story {
+    background: var(--bg-cream);
+    background-image: 
+        radial-gradient(ellipse at 0% 0%, rgba(107,76,42,0.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 100% 100%, rgba(74,107,58,0.05) 0%, transparent 50%);
+}
+
+[data-theme="spanish-garden"] .inv-formal-invite {
+    background-image: radial-gradient(ellipse at 50% 0%, rgba(107,76,42,0.03) 0%, white 70%);
+}
+
+[data-theme="spanish-garden"] .inv-rsvp {
+    background: var(--primary-dark);
+    background-image: 
+        radial-gradient(ellipse at 20% 50%, rgba(107,76,42,0.4) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(196,136,60,0.1) 0%, transparent 40%);
+}
+
+[data-theme="spanish-garden"] .inv-card {
+    background: linear-gradient(135deg, #fefcf8 0%, #f8f0e4 100%);
+    border-color: rgba(107,76,42,0.12);
+}
+
+[data-theme="spanish-garden"] .inv-thank-you {
+    background: var(--bg-cream);
+    background-image: radial-gradient(ellipse at 50% 100%, rgba(196,136,60,0.08) 0%, transparent 60%);
+}
+
+/* ===== SAVE/LOAD MODALS ===== */
+.drafts-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.draft-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 8px;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.draft-item:hover {
+    border-color: var(--primary);
+    background: #f8fafb;
+}
+
+.draft-item-info {
+    flex: 1;
+}
+
+.draft-item-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+}
+
+.draft-item-date {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.draft-item-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.draft-item-actions button {
+    padding: 6px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: white;
+    font-size: 0.75rem;
+    font-family: var(--font-body);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.draft-item-actions .btn-load-draft {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.draft-item-actions .btn-load-draft:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.draft-item-actions .btn-delete-draft {
+    color: #c0392b;
+    border-color: #e0b0b0;
+}
+
+.draft-item-actions .btn-delete-draft:hover {
+    background: #c0392b;
+    color: white;
+}
+
+.no-drafts {
+    text-align: center;
+    padding: 32px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.save-draft-input {
+    margin-bottom: 16px;
+}

@@ -195,6 +195,45 @@
         </div>
     </div>
 
+
+        <!-- Save Draft Modal -->
+        <div class="modal-overlay" id="modal-save-draft" style="display:none;">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3>&#128190; Save Draft</h3>
+                    <button class="modal-close" onclick="closeModal('modal-save-draft')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group save-draft-input">
+                        <label>Draft Name</label>
+                        <input type="text" id="save-draft-name" placeholder="e.g., Final Version, Draft v2...">
+                    </div>
+                    <p style="font-size:0.8rem; color:var(--text-muted);">This will save all sections, theme choice, and music settings.</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal('modal-save-draft')">Cancel</button>
+                    <button class="btn btn-primary" onclick="saveDraftWithName()">Save Draft</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Load Draft Modal -->
+        <div class="modal-overlay" id="modal-load-draft" style="display:none;">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3>&#128194; Load Draft</h3>
+                    <button class="modal-close" onclick="closeModal('modal-load-draft')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="drafts-list" id="drafts-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal('modal-load-draft')">Close</button>
+                </div>
+            </div>
+        </div>
     <script src="app.js"></script>
 </body>
 </html>
