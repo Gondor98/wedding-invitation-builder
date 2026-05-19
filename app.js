@@ -66,11 +66,18 @@ const defaultSections = [
         id: generateId(),
         type: 'rsvp',
         data: {
-            title: 'Please confirm your attendance so we can prepare the best for you',
-            fields: ['name', 'attendance', 'guests', 'message'],
-            buttonText: 'Send Confirmation',
+            title: 'Xin vui lòng xác nhận sự tham gia để chúng tôi chuẩn bị chu đáo nhất cho bạn',
+            placeholderName: 'Tên của bạn',
+            placeholderAttend: 'Bạn có tham dự?',
+            optionYes: 'Có, tôi sẽ tham dự',
+            optionNo: 'Xin lỗi, tôi không thể tham dự',
+            placeholderGuests: 'Số người tham dự',
+            placeholderMessage: 'Gửi lời chúc...',
+            buttonText: 'Gửi xác nhận',
+            thankYouMessage: 'Cảm ơn bạn đã xác nhận!',
             qrImage: '',
-            qrLabel: 'Scan to confirm attendance'
+            qrLabel: 'Quét mã để xác nhận tham dự',
+            webhookUrl: ''
         }
     },
     {
@@ -275,14 +282,20 @@ function renderRSVPPreview(data) {
     const qrContent = data.qrImage
         ? `<img src="${data.qrImage}" alt="QR Code">`
         : `<div class="inv-rsvp-qr-placeholder">QR Code<br>will appear here</div>`;
+    const pName = data.placeholderName || 'Tên của bạn';
+    const pAttend = data.placeholderAttend || 'Bạn có tham dự?';
+    const oYes = data.optionYes || 'Có, tôi sẽ tham dự';
+    const oNo = data.optionNo || 'Xin lỗi, tôi không thể tham dự';
+    const pGuests = data.placeholderGuests || 'Số người tham dự';
+    const pMsg = data.placeholderMessage || 'Gửi lời chúc...';
     return `
         <section class="inv-section inv-rsvp">
             <div class="inv-section-title">${data.title}</div>
             <div class="inv-rsvp-form">
-                <div class="inv-rsvp-field"><input type="text" placeholder="Your Name" disabled></div>
-                <div class="inv-rsvp-field"><select disabled><option>Will you attend?</option><option>Yes, I will attend</option><option>Sorry, I cannot attend</option></select></div>
-                <div class="inv-rsvp-field"><input type="number" placeholder="Number of guests" disabled></div>
-                <div class="inv-rsvp-field"><textarea placeholder="Send your wishes..." rows="3" disabled></textarea></div>
+                <div class="inv-rsvp-field"><input type="text" placeholder="${pName}" disabled></div>
+                <div class="inv-rsvp-field"><select disabled><option>${pAttend}</option><option>${oYes}</option><option>${oNo}</option></select></div>
+                <div class="inv-rsvp-field"><input type="number" placeholder="${pGuests}" disabled></div>
+                <div class="inv-rsvp-field"><textarea placeholder="${pMsg}" rows="3" disabled></textarea></div>
                 <button class="inv-rsvp-btn" disabled>${data.buttonText}</button>
             </div>
             <div class="inv-rsvp-qr">
@@ -510,7 +523,15 @@ function saveCurrentSection() {
             break;
         case 'rsvp':
             editingSection.data.title = document.getElementById('edit-rsvp-title').value;
+            editingSection.data.placeholderName = document.getElementById('edit-rsvp-pname').value;
+            editingSection.data.placeholderAttend = document.getElementById('edit-rsvp-pattend').value;
+            editingSection.data.optionYes = document.getElementById('edit-rsvp-oyes').value;
+            editingSection.data.optionNo = document.getElementById('edit-rsvp-ono').value;
+            editingSection.data.placeholderGuests = document.getElementById('edit-rsvp-pguests').value;
+            editingSection.data.placeholderMessage = document.getElementById('edit-rsvp-pmsg').value;
             editingSection.data.buttonText = document.getElementById('edit-rsvp-btn').value;
+            editingSection.data.thankYouMessage = document.getElementById('edit-rsvp-thanks').value;
+            editingSection.data.webhookUrl = document.getElementById('edit-rsvp-webhook').value;
             editingSection.data.qrLabel = document.getElementById('edit-rsvp-qr-label').value;
             editingSection.data.qrImage = document.getElementById('edit-rsvp-qr-image').value;
             break;
@@ -738,7 +759,7 @@ function getDefaultData(type) {
         };
         case 'love-story': return { label: 'Love Story', title: 'Our Story', entries: [{ date: 'Month Year', title: 'Chapter Title', description: 'Your story here...', image: '' }] };
         case 'invitation': return { intro: 'We cordially invite you', subtitle: 'Please join our celebration', cards: [{ label: 'INVITATION', time: 'Time', date: 'Date', venueLabel: 'VENUE', venueName: 'Venue Name', address: 'Address', note: 'Your presence is our honor', mapEmbed: '' }] };
-        case 'rsvp': return { title: 'Please confirm your attendance', buttonText: 'Send Confirmation', qrImage: '', qrLabel: 'Scan to confirm' };
+        case 'rsvp': return { title: 'Xin vui lòng xác nhận sự tham gia', placeholderName: 'Tên của bạn', placeholderAttend: 'Bạn có tham dự?', optionYes: 'Có, tôi sẽ tham dự', optionNo: 'Xin lỗi, tôi không thể tham dự', placeholderGuests: 'Số người tham dự', placeholderMessage: 'Gửi lời chúc...', buttonText: 'Gửi xác nhận', thankYouMessage: 'Cảm ơn bạn đã xác nhận!', qrImage: '', qrLabel: 'Quét mã để xác nhận', webhookUrl: '' };
         case 'thank-you': return { title: 'Thank You', message: 'Thank you for your love and support.' };
         case 'gallery': return { title: 'Our Moments', images: ['', '', '', ''] };
         case 'custom': return { title: '', content: 'Your content here...' };
@@ -781,9 +802,53 @@ function updateSectionsOrder() {
     renderPreview();
 }
 
+
+// Generate RSVP section specifically for export (functional form)
+function renderRSVPForExport(data) {
+    const qrContent = data.qrImage
+        ? `<img src="${data.qrImage}" alt="QR Code">`
+        : '';
+    const pName = data.placeholderName || 'T\u00ean c\u1ee7a b\u1ea1n';
+    const pAttend = data.placeholderAttend || 'B\u1ea1n c\u00f3 tham d\u1ef1?';
+    const oYes = data.optionYes || 'C\u00f3, t\u00f4i s\u1ebd tham d\u1ef1';
+    const oNo = data.optionNo || 'Xin l\u1ed7i, t\u00f4i kh\u00f4ng th\u1ec3 tham d\u1ef1';
+    const pGuests = data.placeholderGuests || 'S\u1ed1 ng\u01b0\u1eddi tham d\u1ef1';
+    const pMsg = data.placeholderMessage || 'G\u1eedi l\u1eddi ch\u00fac...';
+    const thankMsg = data.thankYouMessage || 'C\u1ea3m \u01a1n b\u1ea1n \u0111\u00e3 x\u00e1c nh\u1eadn!';
+    const webhookUrl = data.webhookUrl || '';
+
+    let qrSection = '';
+    if (data.qrImage || data.qrLabel) {
+        qrSection = `
+            <div class="inv-rsvp-qr">
+                ${data.qrLabel ? `<div class="inv-rsvp-qr-label">${data.qrLabel}</div>` : ''}
+                ${qrContent ? `<div class="inv-rsvp-qr-image">${qrContent}</div>` : ''}
+            </div>`;
+    }
+
+    return `
+        <section class="inv-section inv-rsvp">
+            <div class="inv-section-title">${data.title}</div>
+            <form class="inv-rsvp-form" id="rsvp-form" onsubmit="return submitRSVP(event)">
+                <div class="inv-rsvp-field"><input type="text" id="rsvp-name" placeholder="${pName}" required></div>
+                <div class="inv-rsvp-field"><select id="rsvp-attend" required><option value="">${pAttend}</option><option value="${oYes}">${oYes}</option><option value="${oNo}">${oNo}</option></select></div>
+                <div class="inv-rsvp-field"><input type="number" id="rsvp-guests" placeholder="${pGuests}" min="0" max="20"></div>
+                <div class="inv-rsvp-field"><textarea id="rsvp-message" placeholder="${pMsg}" rows="3"></textarea></div>
+                <button type="submit" class="inv-rsvp-btn">${data.buttonText}</button>
+                <div id="rsvp-status" style="margin-top:12px; font-size:0.85rem; display:none;"></div>
+            </form>
+            ${qrSection}
+            <input type="hidden" id="rsvp-webhook-url" value="${webhookUrl}">
+            <input type="hidden" id="rsvp-thank-msg" value="${thankMsg}">
+        </section>`;
+}
+
 // ===== EXPORT WITH MUSIC =====
 function exportHTML() {
-    const previewHtml = sections.map(section => renderSectionPreview(section)).join('');
+    const previewHtml = sections.map(section => {
+        if (section.type === 'rsvp') return renderRSVPForExport(section.data);
+        return renderSectionPreview(section);
+    }).join('');
 
     let musicHtml = '';
     let musicScript = '';
@@ -825,6 +890,59 @@ function exportHTML() {
         ${previewHtml}
     </div>
     ${musicScript}
+    <script>
+        function submitRSVP(event) {
+            event.preventDefault();
+            var form = document.getElementById('rsvp-form');
+            var btn = form.querySelector('.inv-rsvp-btn');
+            var status = document.getElementById('rsvp-status');
+            var webhookUrl = document.getElementById('rsvp-webhook-url').value;
+            var thankMsg = document.getElementById('rsvp-thank-msg').value;
+
+            var payload = {
+                name: document.getElementById('rsvp-name').value,
+                attendance: document.getElementById('rsvp-attend').value,
+                guests: document.getElementById('rsvp-guests').value,
+                message: document.getElementById('rsvp-message').value
+            };
+
+            btn.disabled = true;
+            btn.textContent = '\u0110ang g\u1eedi...';
+            status.style.display = 'none';
+
+            if (!webhookUrl) {
+                status.style.display = 'block';
+                status.style.color = '#e8c48a';
+                status.textContent = thankMsg;
+                btn.textContent = '\u0110\u00e3 g\u1eedi \u2713';
+                form.reset();
+                return false;
+            }
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(function() {
+                status.style.display = 'block';
+                status.style.color = '#e8c48a';
+                status.textContent = thankMsg;
+                btn.textContent = '\u0110\u00e3 g\u1eedi \u2713';
+                btn.style.background = '#2d8f5e';
+                btn.style.color = 'white';
+                form.reset();
+            }).catch(function(err) {
+                status.style.display = 'block';
+                status.style.color = '#e8c48a';
+                status.textContent = thankMsg;
+                btn.textContent = '\u0110\u00e3 g\u1eedi \u2713';
+                form.reset();
+            });
+
+            return false;
+        }
+    <\/script>
 </body>
 </html>`;
 
