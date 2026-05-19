@@ -77,7 +77,7 @@ const defaultSections = [
             thankYouMessage: 'Cảm ơn bạn đã xác nhận!',
             qrImage: '',
             qrLabel: 'Quét mã để xác nhận tham dự',
-            webhookUrl: ''
+            webhookUrl: 'https://script.google.com/macros/s/AKfycbysXsUi5mQUAFRXlIf4IxLZsoE1hjmLrgG8GJ38hen803ClxSNYDmVrFaLij8KG9RKAcA/exec'
         }
     },
     {
@@ -759,7 +759,7 @@ function getDefaultData(type) {
         };
         case 'love-story': return { label: 'Love Story', title: 'Our Story', entries: [{ date: 'Month Year', title: 'Chapter Title', description: 'Your story here...', image: '' }] };
         case 'invitation': return { intro: 'We cordially invite you', subtitle: 'Please join our celebration', cards: [{ label: 'INVITATION', time: 'Time', date: 'Date', venueLabel: 'VENUE', venueName: 'Venue Name', address: 'Address', note: 'Your presence is our honor', mapEmbed: '' }] };
-        case 'rsvp': return { title: 'Xin vui lòng xác nhận sự tham gia', placeholderName: 'Tên của bạn', placeholderAttend: 'Bạn có tham dự?', optionYes: 'Có, tôi sẽ tham dự', optionNo: 'Xin lỗi, tôi không thể tham dự', placeholderGuests: 'Số người tham dự', placeholderMessage: 'Gửi lời chúc...', buttonText: 'Gửi xác nhận', thankYouMessage: 'Cảm ơn bạn đã xác nhận!', qrImage: '', qrLabel: 'Quét mã để xác nhận', webhookUrl: '' };
+        case 'rsvp': return { title: 'Xin vui lòng xác nhận sự tham gia', placeholderName: 'Tên của bạn', placeholderAttend: 'Bạn có tham dự?', optionYes: 'Có, tôi sẽ tham dự', optionNo: 'Xin lỗi, tôi không thể tham dự', placeholderGuests: 'Số người tham dự', placeholderMessage: 'Gửi lời chúc...', buttonText: 'Gửi xác nhận', thankYouMessage: 'Cảm ơn bạn đã xác nhận!', qrImage: '', qrLabel: 'Quét mã để xác nhận', webhookUrl: 'https://script.google.com/macros/s/AKfycbysXsUi5mQUAFRXlIf4IxLZsoE1hjmLrgG8GJ38hen803ClxSNYDmVrFaLij8KG9RKAcA/exec' };
         case 'thank-you': return { title: 'Thank You', message: 'Thank you for your love and support.' };
         case 'gallery': return { title: 'Our Moments', images: ['', '', '', ''] };
         case 'custom': return { title: '', content: 'Your content here...' };
