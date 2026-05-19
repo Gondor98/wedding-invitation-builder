@@ -959,7 +959,7 @@ function getExportStyles() {
     return `
         :root { --primary: #1a3a6b; --primary-light: #2d5a9e; --primary-dark: #0d1f3d; --gold: #b8965a; --gold-light: #dfc692; --bg-cream: #f5f7fa; --text-dark: #2c2c2c; --text-muted: #6b6b6b; --border: #e0ddd8; --radius: 8px; --radius-lg: 16px; --font-display: 'Playfair Display', serif; --font-elegant: 'Cormorant Garamond', serif; --font-body: 'Montserrat', sans-serif; --font-script: 'Dancing Script', cursive; --hero-gradient: linear-gradient(135deg, #0d1f3d 0%, #1a3a6b 50%, #0d1f3d 100%); --ornament-color: rgba(184,150,90,0.4); }
         [data-theme="luxurious-blue"] { --primary: #1a3a6b; --primary-light: #2d5a9e; --primary-dark: #0d1f3d; --gold: #b8965a; --gold-light: #dfc692; --bg-cream: #f5f7fa; --hero-gradient: linear-gradient(135deg, #0d1f3d 0%, #1a3a6b 50%, #0d1f3d 100%); --ornament-color: rgba(184,150,90,0.4); }
-        [data-theme="spanish-garden"] { --primary: #6b4c2a; --primary-light: #a06b3a; --primary-dark: #3d2a14; --gold: #c4883c; --gold-light: #e8c48a; --bg-cream: #fdf6ee; --hero-gradient: linear-gradient(135deg, #3d2a14 0%, #6b4c2a 40%, #4a6b3a 100%); --ornament-color: rgba(196,136,60,0.4); }
+        [data-theme="spanish-garden"] { --primary: #4a7a52; --primary-light: #6a9a6a; --primary-dark: #2e5a3a; --gold: #c49a4c; --gold-light: #e8cb82; --bg-cream: #f8f9f4; --hero-gradient: linear-gradient(135deg, #3a6b4a 0%, #5a8a5a 35%, #7aa868 70%, #5a8a4a 100%); --ornament-color: rgba(196,154,76,0.4); }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: var(--font-body); background: #e8e5e0; display: flex; justify-content: center; padding: 20px; min-height: 100vh; }
         .invitation-wrapper { width: 100%; max-width: 480px; background: white; border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
@@ -1005,7 +1005,7 @@ function getExportStyles() {
         .inv-invitation-subtitle { font-family: var(--font-elegant); font-size: 0.95rem; color: var(--text-muted); margin-bottom: 40px; }
         .inv-card { background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 3%, white) 0%, color-mix(in srgb, var(--primary) 8%, white) 100%); border: 1px solid color-mix(in srgb, var(--primary) 15%, transparent); border-radius: var(--radius-lg); padding: 32px 24px; margin-bottom: 24px; }
         [data-theme="luxurious-blue"] .inv-card { background: linear-gradient(135deg, #f8fafd 0%, #eef3f9 100%); border-color: rgba(26,58,107,0.12); }
-        [data-theme="spanish-garden"] .inv-card { background: linear-gradient(135deg, #fefcf8 0%, #f8f0e4 100%); border-color: rgba(107,76,42,0.15); }
+        [data-theme="spanish-garden"] .inv-card { background: linear-gradient(135deg, #f8fbf6 0%, #eef5ea 100%); border-color: rgba(74,122,82,0.15); }
         .inv-card-label { font-family: var(--font-body); font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: var(--primary); margin-bottom: 16px; font-weight: 600; }
         .inv-card-time { font-family: var(--font-display); font-size: 1.1rem; color: var(--primary-dark); margin-bottom: 8px; }
         .inv-card-date { font-family: var(--font-elegant); font-size: 0.95rem; color: var(--text-muted); margin-bottom: 16px; }
@@ -1059,11 +1059,11 @@ function getExportStyles() {
         [data-theme="luxurious-blue"] .inv-love-story { background: linear-gradient(135deg, rgba(26,58,107,0.06) 0%, #f5f7fa 40%, rgba(184,150,90,0.06) 100%); }
         [data-theme="luxurious-blue"] .inv-card { background: linear-gradient(135deg, #f8fafd 0%, #eef3f9 100%); border-color: rgba(26,58,107,0.12); }
         [data-theme="luxurious-blue"] .inv-rsvp { background: #0d1f3d; background-image: radial-gradient(ellipse at 10% 20%, rgba(26,58,107,0.5) 0%, transparent 40%), radial-gradient(ellipse at 90% 80%, rgba(184,150,90,0.12) 0%, transparent 40%); }
-        [data-theme="spanish-garden"] .inv-love-story { background: linear-gradient(135deg, rgba(107,76,42,0.06) 0%, #fdf6ee 40%, rgba(74,107,58,0.06) 100%); }
-        [data-theme="spanish-garden"] .inv-card { background: linear-gradient(135deg, #fefcf8 0%, #f8f0e4 100%); border-color: rgba(107,76,42,0.15); }
-        [data-theme="spanish-garden"] .inv-formal-invite { border-top-color: #c4883c; }
-        [data-theme="spanish-garden"] .inv-thank-you { border-bottom-color: #c4883c; }
-        [data-theme="spanish-garden"] .inv-rsvp { background: #3d2a14; background-image: radial-gradient(ellipse at 10% 20%, rgba(107,76,42,0.5) 0%, transparent 40%), radial-gradient(ellipse at 90% 80%, rgba(196,136,60,0.15) 0%, transparent 40%); }
+        [data-theme="spanish-garden"] .inv-love-story { background: linear-gradient(135deg, rgba(74,122,82,0.07) 0%, #f8f9f4 40%, rgba(196,154,76,0.06) 100%); }
+        [data-theme="spanish-garden"] .inv-card { background: linear-gradient(135deg, #f8fbf6 0%, #eef5ea 100%); border-color: rgba(74,122,82,0.15); }
+        [data-theme="spanish-garden"] .inv-formal-invite { border-top-color: #c49a4c; }
+        [data-theme="spanish-garden"] .inv-thank-you { border-bottom-color: #c49a4c; }
+        [data-theme="spanish-garden"] .inv-rsvp { background: #2e5a3a; background-image: radial-gradient(ellipse at 10% 20%, rgba(74,122,82,0.4) 0%, transparent 40%), radial-gradient(ellipse at 90% 80%, rgba(196,154,76,0.15) 0%, transparent 40%); }
     `;
 }
 

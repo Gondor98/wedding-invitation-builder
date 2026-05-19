@@ -46,15 +46,15 @@
 
 /* ===== THEME: SPANISH GARDEN ===== */
 [data-theme="spanish-garden"] {
-    --primary: #6b4c2a;
-    --primary-light: #a06b3a;
-    --primary-dark: #3d2a14;
-    --gold: #c4883c;
-    --gold-light: #e8c48a;
-    --bg-cream: #fdf6ee;
-    --bg-dark: #3d2a14;
-    --hero-gradient: linear-gradient(135deg, #3d2a14 0%, #6b4c2a 40%, #4a6b3a 100%);
-    --ornament-color: rgba(196,136,60,0.4);
+    --primary: #4a7a52;
+    --primary-light: #6a9a6a;
+    --primary-dark: #2e5a3a;
+    --gold: #c49a4c;
+    --gold-light: #e8cb82;
+    --bg-cream: #f8f9f4;
+    --bg-dark: #2e5a3a;
+    --hero-gradient: linear-gradient(135deg, #3a6b4a 0%, #5a8a5a 35%, #7aa868 70%, #5a8a4a 100%);
+    --ornament-color: rgba(196,154,76,0.4);
 }
 
 html, body {
@@ -1215,8 +1215,8 @@ html, body {
 }
 
 [data-theme="spanish-garden"] .inv-card {
-    background: linear-gradient(135deg, #fefcf8 0%, #f8f0e4 100%);
-    border-color: rgba(107,76,42,0.15);
+    background: linear-gradient(135deg, #f8fbf6 0%, #eef5ea 100%);
+    border-color: rgba(74,122,82,0.15);
 }
 
 [data-theme="spanish-garden"] .inv-card-note {
@@ -1422,40 +1422,40 @@ html, body {
 /* --- Spanish Garden --- */
 [data-theme="spanish-garden"] .inv-love-story {
     background: linear-gradient(135deg, 
-        rgba(107,76,42,0.06) 0%, 
-        #fdf6ee 40%, 
-        rgba(74,107,58,0.06) 100%);
+        rgba(74,122,82,0.07) 0%, 
+        #f8f9f4 40%, 
+        rgba(196,154,76,0.06) 100%);
 }
 
 [data-theme="spanish-garden"] .inv-formal-invite {
-    background: linear-gradient(180deg, rgba(107,76,42,0.05) 0%, white 15%, white 85%, rgba(196,136,60,0.06) 100%);
-    border-top-color: #c4883c;
+    background: linear-gradient(180deg, rgba(74,122,82,0.06) 0%, white 15%, white 85%, rgba(196,154,76,0.06) 100%);
+    border-top-color: #c49a4c;
 }
 
 [data-theme="spanish-garden"] .inv-invitation {
-    background: linear-gradient(180deg, rgba(196,136,60,0.06) 0%, white 20%, rgba(74,107,58,0.03) 50%, white 80%, rgba(196,136,60,0.06) 100%);
+    background: linear-gradient(180deg, rgba(196,154,76,0.06) 0%, white 20%, rgba(74,122,82,0.04) 50%, white 80%, rgba(196,154,76,0.06) 100%);
 }
 
 [data-theme="spanish-garden"] .inv-gallery {
-    background: linear-gradient(180deg, rgba(74,107,58,0.05) 0%, #fdf6ee 50%, rgba(196,136,60,0.05) 100%);
+    background: linear-gradient(180deg, rgba(74,122,82,0.06) 0%, #f8f9f4 50%, rgba(196,154,76,0.05) 100%);
 }
 
 [data-theme="spanish-garden"] .inv-thank-you {
-    background: radial-gradient(ellipse at 50% 50%, rgba(196,136,60,0.12) 0%, transparent 70%), linear-gradient(180deg, #fdf6ee 0%, rgba(196,136,60,0.07) 100%);
-    border-bottom-color: #c4883c;
+    background: radial-gradient(ellipse at 50% 50%, rgba(196,154,76,0.1) 0%, transparent 70%), linear-gradient(180deg, #f8f9f4 0%, rgba(74,122,82,0.06) 100%);
+    border-bottom-color: #c49a4c;
 }
 
 [data-theme="spanish-garden"] .inv-rsvp {
-    background: #3d2a14;
+    background: #2e5a3a;
     background-image: 
-        radial-gradient(ellipse at 10% 20%, rgba(107,76,42,0.5) 0%, transparent 40%),
-        radial-gradient(ellipse at 90% 80%, rgba(196,136,60,0.15) 0%, transparent 40%),
-        radial-gradient(ellipse at 50% 100%, rgba(74,107,58,0.15) 0%, transparent 50%);
+        radial-gradient(ellipse at 10% 20%, rgba(74,122,82,0.4) 0%, transparent 40%),
+        radial-gradient(ellipse at 90% 80%, rgba(196,154,76,0.15) 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 100%, rgba(106,154,106,0.2) 0%, transparent 50%);
 }
 
 [data-theme="spanish-garden"] .inv-card {
-    background: linear-gradient(135deg, #fefcf8 0%, #f8f0e4 100%);
-    border-color: rgba(107,76,42,0.15);
+    background: linear-gradient(135deg, #f8fbf6 0%, #eef5ea 100%);
+    border-color: rgba(74,122,82,0.15);
 }
 
 /* Spanish Garden uses warm-toned ornament SVGs */
@@ -1463,7 +1463,7 @@ html, body {
 [data-theme="spanish-garden"] .inv-invitation::before,
 [data-theme="spanish-garden"] .inv-gallery::before,
 [data-theme="spanish-garden"] .inv-thank-you::before {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M5,50 Q5,20 25,10 Q45,0 50,20 Q55,0 75,10 Q95,20 95,50' fill='none' stroke='%23c4883c' stroke-width='1.5'/%3E%3Cpath d='M15,45 Q20,25 40,20 Q50,15 50,30' fill='none' stroke='%23c4883c' stroke-width='1'/%3E%3Ccircle cx='50' cy='12' r='3' fill='%23c4883c' fill-opacity='0.5'/%3E%3Cpath d='M5,50 Q10,60 20,55 Q30,50 25,40' fill='none' stroke='%234a6b3a' stroke-width='1'/%3E%3Cpath d='M10,70 Q5,55 15,50' fill='none' stroke='%234a6b3a' stroke-width='0.8'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M5,50 Q5,20 25,10 Q45,0 50,20 Q55,0 75,10 Q95,20 95,50' fill='none' stroke='%234a7a52' stroke-width='1.5'/%3E%3Cpath d='M15,45 Q20,25 40,20 Q50,15 50,30' fill='none' stroke='%234a7a52' stroke-width='1'/%3E%3Ccircle cx='50' cy='12' r='3' fill='%234a7a52' fill-opacity='0.5'/%3E%3Cpath d='M5,50 Q10,60 20,55 Q30,50 25,40' fill='none' stroke='%234a6b3a' stroke-width='1'/%3E%3Cpath d='M10,70 Q5,55 15,50' fill='none' stroke='%234a6b3a' stroke-width='0.8'/%3E%3C/svg%3E");
     opacity: 0.25;
 }
 
@@ -1471,13 +1471,13 @@ html, body {
 [data-theme="spanish-garden"] .inv-invitation::after,
 [data-theme="spanish-garden"] .inv-gallery::after,
 [data-theme="spanish-garden"] .inv-thank-you::after {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M5,50 Q5,20 25,10 Q45,0 50,20 Q55,0 75,10 Q95,20 95,50' fill='none' stroke='%23c4883c' stroke-width='1.5'/%3E%3Cpath d='M15,45 Q20,25 40,20 Q50,15 50,30' fill='none' stroke='%23c4883c' stroke-width='1'/%3E%3Ccircle cx='50' cy='12' r='3' fill='%23c4883c' fill-opacity='0.5'/%3E%3Cpath d='M5,50 Q10,60 20,55 Q30,50 25,40' fill='none' stroke='%234a6b3a' stroke-width='1'/%3E%3Cpath d='M10,70 Q5,55 15,50' fill='none' stroke='%234a6b3a' stroke-width='0.8'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M5,50 Q5,20 25,10 Q45,0 50,20 Q55,0 75,10 Q95,20 95,50' fill='none' stroke='%234a7a52' stroke-width='1.5'/%3E%3Cpath d='M15,45 Q20,25 40,20 Q50,15 50,30' fill='none' stroke='%234a7a52' stroke-width='1'/%3E%3Ccircle cx='50' cy='12' r='3' fill='%234a7a52' fill-opacity='0.5'/%3E%3Cpath d='M5,50 Q10,60 20,55 Q30,50 25,40' fill='none' stroke='%234a6b3a' stroke-width='1'/%3E%3Cpath d='M10,70 Q5,55 15,50' fill='none' stroke='%234a6b3a' stroke-width='0.8'/%3E%3C/svg%3E");
     opacity: 0.25;
 }
 
 [data-theme="spanish-garden"] .inv-love-story::before,
 [data-theme="spanish-garden"] .inv-love-story::after {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 200'%3E%3Cpath d='M30,0 Q45,30 30,50 Q15,70 30,100 Q45,130 30,150 Q15,170 30,200' fill='none' stroke='%234a6b3a' stroke-width='1.5'/%3E%3Ccircle cx='30' cy='50' r='4' fill='%23c4883c' fill-opacity='0.4'/%3E%3Ccircle cx='30' cy='100' r='3' fill='%234a6b3a' fill-opacity='0.3'/%3E%3Ccircle cx='30' cy='150' r='4' fill='%23c4883c' fill-opacity='0.4'/%3E%3Cpath d='M30,50 Q40,45 45,50 Q40,55 30,50' fill='%234a6b3a' fill-opacity='0.25'/%3E%3Cpath d='M30,100 Q20,95 15,100 Q20,105 30,100' fill='%234a6b3a' fill-opacity='0.25'/%3E%3Cpath d='M30,150 Q40,145 45,150 Q40,155 30,150' fill='%234a6b3a' fill-opacity='0.25'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 200'%3E%3Cpath d='M30,0 Q45,30 30,50 Q15,70 30,100 Q45,130 30,150 Q15,170 30,200' fill='none' stroke='%234a6b3a' stroke-width='1.5'/%3E%3Ccircle cx='30' cy='50' r='4' fill='%234a7a52' fill-opacity='0.4'/%3E%3Ccircle cx='30' cy='100' r='3' fill='%234a6b3a' fill-opacity='0.3'/%3E%3Ccircle cx='30' cy='150' r='4' fill='%234a7a52' fill-opacity='0.4'/%3E%3Cpath d='M30,50 Q40,45 45,50 Q40,55 30,50' fill='%234a6b3a' fill-opacity='0.25'/%3E%3Cpath d='M30,100 Q20,95 15,100 Q20,105 30,100' fill='%234a6b3a' fill-opacity='0.25'/%3E%3Cpath d='M30,150 Q40,145 45,150 Q40,155 30,150' fill='%234a6b3a' fill-opacity='0.25'/%3E%3C/svg%3E");
     opacity: 0.18;
 }
 
