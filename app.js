@@ -13,6 +13,32 @@ const defaultSections = [
     },
     {
         id: generateId(),
+        type: 'formal-invite',
+        data: {
+            heading: 'TRAN TRONG KINH MOI',
+            guestName: 'Guest Name',
+            message: 'Your presence will make our wedding day even more meaningful',
+            groomFamily: {
+                sideLabel: 'Groom\'s Family',
+                fatherName: 'Mr. NGUYEN DUC HOAN',
+                motherName: 'Mrs. PHAN THI BICH THUY',
+                address: 'My Phuoc Apartment\nGia Dinh Ward, HCMC'
+            },
+            brideFamily: {
+                sideLabel: 'Bride\'s Family',
+                fatherName: 'Mr. NGUYEN MANH TUYEN',
+                motherName: 'Mrs. TRINH PHUONG NGOC',
+                address: 'An Binh Residential Area\nTran Bien Ward, Dong Nai'
+            },
+            announcement: 'We are honored to announce the wedding of our children',
+            groomFullName: 'Nguyen Duc Thanh',
+            groomRole: 'Eldest Son',
+            brideFullName: 'Nguyen Trinh Phuong Mai',
+            brideRole: 'Eldest Daughter'
+        }
+    },
+    {
+        id: generateId(),
         type: 'love-story',
         data: {
             label: 'Love Story',
@@ -31,8 +57,8 @@ const defaultSections = [
             intro: 'We cordially invite you',
             subtitle: 'Please join us in celebrating our union',
             cards: [
-                { label: "GROOM'S FAMILY INVITATION", time: 'Ceremony at 10:30 AM', date: 'December 25, 2025', venueLabel: 'FAMILY RESIDENCE', venueName: 'Groom Family Home', address: '123 Main Street, District 1, Ho Chi Minh City', note: 'Your presence is our greatest honor' },
-                { label: "BRIDE'S FAMILY INVITATION", time: 'Reception at 7:30 PM', date: 'December 25, 2025', venueLabel: 'WEDDING RESTAURANT', venueName: 'White Place', address: '456 Wedding Avenue, District 7, Ho Chi Minh City', note: 'Your presence is our greatest honor' }
+                { label: "GROOM'S FAMILY INVITATION", time: 'Ceremony at 10:30 AM', date: 'December 25, 2025', venueLabel: 'FAMILY RESIDENCE', venueName: 'Groom Family Home', address: '123 Main Street, District 1, Ho Chi Minh City', note: 'Your presence is our greatest honor', mapEmbed: '' },
+                { label: "BRIDE'S FAMILY INVITATION", time: 'Reception at 7:30 PM', date: 'December 25, 2025', venueLabel: 'WEDDING RESTAURANT', venueName: 'White Place', address: '456 Wedding Avenue, District 7, Ho Chi Minh City', note: 'Your presence is our greatest honor', mapEmbed: '' }
             ]
         }
     },
@@ -64,8 +90,8 @@ let draggedItem = null;
 // Music settings
 let musicSettings = {
     enabled: false,
-    source: '', // data URL or external URL
-    sourceType: 'file', // 'file' or 'url'
+    source: '',
+    sourceType: 'file',
     loop: true,
     autoplay: true,
     fileName: ''
@@ -85,13 +111,13 @@ function openModal(modalId) {
 }
 
 function getSectionTypeName(type) {
-    const names = { 'hero': 'Hero / Cover', 'love-story': 'Love Story', 'invitation': 'Invitation Card', 'rsvp': 'RSVP', 'thank-you': 'Thank You', 'gallery': 'Photo Gallery', 'custom': 'Custom Section' };
+    const names = { 'hero': 'Hero / Cover', 'formal-invite': 'Formal Invite', 'love-story': 'Love Story', 'invitation': 'Invitation Card', 'rsvp': 'RSVP', 'thank-you': 'Thank You', 'gallery': 'Photo Gallery', 'custom': 'Custom Section' };
     return names[type] || type;
 }
 
 function getSectionIcon(type) {
-    const icons = { 'hero': '&#128141;', 'love-story': '&#128149;', 'invitation': '&#128140;', 'rsvp': '&#9989;', 'thank-you': '&#128591;', 'gallery': '&#128444;', 'custom': '&#9999;' };
-    return icons[type] || '&#9634;';
+    const icons = { 'hero': '\u{1F48D}', 'formal-invite': '\u{1F4DC}', 'love-story': '\u{1F495}', 'invitation': '\u{1F48C}', 'rsvp': '\u2705', 'thank-you': '\u{1F64F}', 'gallery': '\u{1F5BC}', 'custom': '\u270F' };
+    return icons[type] || '\u25A2';
 }
 
 // ===== RENDER EDITOR PANEL =====
@@ -101,12 +127,12 @@ function renderEditorPanel() {
         <div class="section-card" data-id="${section.id}" draggable="true">
             <div class="section-card-header">
                 <div class="section-card-title">
-                    <span class="drag-handle">&#8942;&#8942;</span>
+                    <span class="drag-handle">\u22EE\u22EE</span>
                     <span>${getSectionIcon(section.type)} ${getPreviewTitle(section)}</span>
                 </div>
                 <div class="section-card-actions">
-                    <button class="btn-edit" onclick="editSection('${section.id}')" title="Edit">&#9998;</button>
-                    <button class="btn-delete" onclick="deleteSection('${section.id}')" title="Delete">&#128465;</button>
+                    <button class="btn-edit" onclick="editSection('${section.id}')" title="Edit">\u270E</button>
+                    <button class="btn-delete" onclick="deleteSection('${section.id}')" title="Delete">\u{1F5D1}</button>
                 </div>
             </div>
             <div class="section-card-type">${getSectionTypeName(section.type)}</div>
@@ -118,6 +144,7 @@ function renderEditorPanel() {
 function getPreviewTitle(section) {
     switch(section.type) {
         case 'hero': return section.data.name1 + ' & ' + section.data.name2;
+        case 'formal-invite': return section.data.guestName || 'Formal Invite';
         case 'love-story': return section.data.title || 'Love Story';
         case 'invitation': return 'Invitation Cards';
         case 'rsvp': return 'RSVP Form';
@@ -137,6 +164,7 @@ function renderPreview(container) {
 function renderSectionPreview(section) {
     switch(section.type) {
         case 'hero': return renderHeroPreview(section.data);
+        case 'formal-invite': return renderFormalInvitePreview(section.data);
         case 'love-story': return renderLoveStoryPreview(section.data);
         case 'invitation': return renderInvitationPreview(section.data);
         case 'rsvp': return renderRSVPPreview(section.data);
@@ -158,6 +186,38 @@ function renderHeroPreview(data) {
         </section>`;
 }
 
+function renderFormalInvitePreview(data) {
+    const groomAddr = (data.groomFamily.address || '').replace(/\n/g, '<br>');
+    const brideAddr = (data.brideFamily.address || '').replace(/\n/g, '<br>');
+    return `
+        <section class="inv-section inv-formal-invite">
+            <div class="inv-formal-heading">${data.heading}</div>
+            <div class="inv-formal-guest-name">${data.guestName}</div>
+            <div class="inv-formal-message">${data.message}</div>
+            <div class="inv-formal-families">
+                <div class="inv-formal-family-side">
+                    <h4>${data.groomFamily.sideLabel}</h4>
+                    <div class="parent-name">${data.groomFamily.fatherName}</div>
+                    <div class="parent-name">${data.groomFamily.motherName}</div>
+                    <div class="family-address">${groomAddr}</div>
+                </div>
+                <div class="inv-formal-family-side">
+                    <h4>${data.brideFamily.sideLabel}</h4>
+                    <div class="parent-name">${data.brideFamily.fatherName}</div>
+                    <div class="parent-name">${data.brideFamily.motherName}</div>
+                    <div class="family-address">${brideAddr}</div>
+                </div>
+            </div>
+            <div class="inv-formal-divider"><span>\u2729 \u2729</span></div>
+            <div class="inv-formal-announce">${data.announcement}</div>
+            <div class="inv-formal-couple-name">${data.groomFullName}</div>
+            <div class="inv-formal-role">${data.groomRole}</div>
+            <div class="inv-formal-heart">\u2764</div>
+            <div class="inv-formal-role">${data.brideRole}</div>
+            <div class="inv-formal-couple-name">${data.brideFullName}</div>
+        </section>`;
+}
+
 function renderLoveStoryPreview(data) {
     const entries = (data.entries || []).map(entry => {
         const img = entry.image ? `<img class="inv-timeline-image" src="${entry.image}" alt="${entry.title}">` : '';
@@ -167,7 +227,14 @@ function renderLoveStoryPreview(data) {
 }
 
 function renderInvitationPreview(data) {
-    const cards = (data.cards || []).map(card => `
+    const cards = (data.cards || []).map(card => {
+        let mapHtml = '';
+        if (card.mapEmbed && card.mapEmbed.trim()) {
+            mapHtml = `<div class="inv-card-map">${card.mapEmbed}</div>`;
+        } else {
+            mapHtml = `<div class="inv-card-map"><div class="inv-card-map-placeholder">\u{1F4CD} Google Map will appear here</div></div>`;
+        }
+        return `
         <div class="inv-card">
             <div class="inv-card-label">${card.label}</div>
             <div class="inv-card-time">${card.time}</div>
@@ -176,7 +243,9 @@ function renderInvitationPreview(data) {
             <div class="inv-card-venue-name">${card.venueName}</div>
             <div class="inv-card-address">${card.address}</div>
             <div class="inv-card-note"><em>${card.note}</em></div>
-        </div>`).join('');
+            ${mapHtml}
+        </div>`;
+    }).join('');
     return `<section class="inv-section inv-invitation"><div class="inv-invitation-intro">${data.intro}</div><div class="inv-invitation-subtitle">${data.subtitle}</div>${cards}</section>`;
 }
 
@@ -203,7 +272,7 @@ function renderRSVPPreview(data) {
 
 function renderThankYouPreview(data) {
     const message = data.message.replace(/\n/g, '<br>');
-    return `<section class="inv-section inv-thank-you"><div class="inv-section-label">&#10084;</div><div class="inv-section-title">${data.title}</div><div class="inv-thank-you-message">${message}</div></section>`;
+    return `<section class="inv-section inv-thank-you"><div class="inv-section-label">\u2764</div><div class="inv-section-title">${data.title}</div><div class="inv-thank-you-message">${message}</div></section>`;
 }
 
 function renderGalleryPreview(data) {
@@ -220,6 +289,7 @@ function renderCustomPreview(data) {
     return `<section class="inv-section inv-custom">${data.title ? `<div class="inv-section-title">${data.title}</div>` : ''}<div class="inv-custom-content">${content}</div></section>`;
 }
 
+
 // ===== SECTION EDITING =====
 function editSection(sectionId) {
     const section = sections.find(s => s.id === sectionId);
@@ -233,6 +303,7 @@ function editSection(sectionId) {
 function getEditForm(section) {
     switch(section.type) {
         case 'hero': return getHeroEditForm(section.data);
+        case 'formal-invite': return getFormalInviteEditForm(section.data);
         case 'love-story': return getLoveStoryEditForm(section.data);
         case 'invitation': return getInvitationEditForm(section.data);
         case 'rsvp': return getRSVPEditForm(section.data);
@@ -253,10 +324,40 @@ function getHeroEditForm(data) {
         <div class="form-group"><label>Wedding Date</label><input type="text" id="edit-hero-date" value="${escapeAttr(data.date)}" placeholder="e.g., 25.12.2025"></div>
         <div class="form-group"><label>Cover Photo (Optional)</label>
             <div class="image-upload-area" id="hero-image-upload">
-                ${data.heroImage ? `<img src="${data.heroImage}" alt="Cover">` : `<div class="upload-icon">&#128247;</div><div class="upload-text">Click or drag to upload cover photo</div>`}
+                ${data.heroImage ? `<img src="${data.heroImage}" alt="Cover">` : `<div class="upload-icon">\u{1F4F7}</div><div class="upload-text">Click or drag to upload cover photo</div>`}
                 <input type="file" accept="image/*" onchange="handleImageUpload(event, 'hero-image-upload', 'edit-hero-image')">
             </div>
             <input type="hidden" id="edit-hero-image" value="${escapeAttr(data.heroImage || '')}">
+        </div>`;
+}
+
+function getFormalInviteEditForm(data) {
+    return `
+        <div class="form-group"><label>Heading</label><input type="text" id="edit-fi-heading" value="${escapeAttr(data.heading)}"></div>
+        <div class="form-group"><label>Guest Name</label><input type="text" id="edit-fi-guest" value="${escapeAttr(data.guestName)}" placeholder="e.g., Gia dinh ban Ngoc Quyen"></div>
+        <div class="form-group"><label>Message</label><textarea id="edit-fi-message" rows="2">${escapeHtml(data.message)}</textarea></div>
+        <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border);">
+        <h4 style="font-size:0.85rem; color:var(--primary); margin-bottom:12px;">GROOM'S FAMILY</h4>
+        <div class="form-group"><label>Side Label</label><input type="text" id="edit-fi-groom-label" value="${escapeAttr(data.groomFamily.sideLabel)}"></div>
+        <div class="form-group"><label>Father's Name</label><input type="text" id="edit-fi-groom-father" value="${escapeAttr(data.groomFamily.fatherName)}"></div>
+        <div class="form-group"><label>Mother's Name</label><input type="text" id="edit-fi-groom-mother" value="${escapeAttr(data.groomFamily.motherName)}"></div>
+        <div class="form-group"><label>Address</label><textarea id="edit-fi-groom-addr" rows="2">${escapeHtml(data.groomFamily.address)}</textarea></div>
+        <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border);">
+        <h4 style="font-size:0.85rem; color:var(--primary); margin-bottom:12px;">BRIDE'S FAMILY</h4>
+        <div class="form-group"><label>Side Label</label><input type="text" id="edit-fi-bride-label" value="${escapeAttr(data.brideFamily.sideLabel)}"></div>
+        <div class="form-group"><label>Father's Name</label><input type="text" id="edit-fi-bride-father" value="${escapeAttr(data.brideFamily.fatherName)}"></div>
+        <div class="form-group"><label>Mother's Name</label><input type="text" id="edit-fi-bride-mother" value="${escapeAttr(data.brideFamily.motherName)}"></div>
+        <div class="form-group"><label>Address</label><textarea id="edit-fi-bride-addr" rows="2">${escapeHtml(data.brideFamily.address)}</textarea></div>
+        <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border);">
+        <h4 style="font-size:0.85rem; color:var(--primary); margin-bottom:12px;">COUPLE</h4>
+        <div class="form-group"><label>Announcement Text</label><input type="text" id="edit-fi-announce" value="${escapeAttr(data.announcement)}"></div>
+        <div class="form-row">
+            <div class="form-group"><label>Groom Full Name</label><input type="text" id="edit-fi-groom-name" value="${escapeAttr(data.groomFullName)}"></div>
+            <div class="form-group"><label>Groom Role</label><input type="text" id="edit-fi-groom-role" value="${escapeAttr(data.groomRole)}" placeholder="e.g., Eldest Son"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>Bride Full Name</label><input type="text" id="edit-fi-bride-name" value="${escapeAttr(data.brideFullName)}"></div>
+            <div class="form-group"><label>Bride Role</label><input type="text" id="edit-fi-bride-role" value="${escapeAttr(data.brideRole)}" placeholder="e.g., Eldest Daughter"></div>
         </div>`;
 }
 
@@ -269,7 +370,7 @@ function getLoveStoryEditForm(data) {
             <div class="form-group"><label>Description</label><textarea class="entry-desc" rows="3">${escapeHtml(entry.description)}</textarea></div>
             <div class="form-group"><label>Photo</label>
                 <div class="image-upload-area" id="entry-image-upload-${i}">
-                    ${entry.image ? `<img src="${entry.image}" alt="Photo">` : `<div class="upload-icon">&#128247;</div><div class="upload-text">Upload photo</div>`}
+                    ${entry.image ? `<img src="${entry.image}" alt="Photo">` : `<div class="upload-icon">\u{1F4F7}</div><div class="upload-text">Upload photo</div>`}
                     <input type="file" accept="image/*" onchange="handleImageUpload(event, 'entry-image-upload-${i}', 'entry-image-${i}')">
                 </div>
                 <input type="hidden" class="entry-image" id="entry-image-${i}" value="${escapeAttr(entry.image || '')}">
@@ -294,6 +395,10 @@ function getInvitationEditForm(data) {
             <div class="form-group"><label>Venue Name</label><input type="text" class="card-venue-name" value="${escapeAttr(card.venueName)}"></div>
             <div class="form-group"><label>Address</label><input type="text" class="card-address" value="${escapeAttr(card.address)}"></div>
             <div class="form-group"><label>Note</label><input type="text" class="card-note" value="${escapeAttr(card.note)}"></div>
+            <div class="form-group"><label>Google Maps Embed Code</label>
+                <textarea class="card-map-embed" rows="3" placeholder="Paste Google Maps embed iframe code here...">${escapeHtml(card.mapEmbed || '')}</textarea>
+                <small style="color:var(--text-muted); display:block; margin-top:4px;">Go to Google Maps &rarr; Share &rarr; Embed a map &rarr; Copy the &lt;iframe&gt; code</small>
+            </div>
         </div>`).join('');
     return `
         <div class="form-group"><label>Intro Text</label><input type="text" id="edit-inv-intro" value="${escapeAttr(data.intro)}"></div>
@@ -308,7 +413,7 @@ function getRSVPEditForm(data) {
         <div class="form-group"><label>QR Code Label</label><input type="text" id="edit-rsvp-qr-label" value="${escapeAttr(data.qrLabel)}"></div>
         <div class="form-group"><label>QR Code Image</label>
             <div class="image-upload-area" id="rsvp-qr-upload">
-                ${data.qrImage ? `<img src="${data.qrImage}" alt="QR Code">` : `<div class="upload-icon">&#9634;</div><div class="upload-text">Upload QR Code image</div>`}
+                ${data.qrImage ? `<img src="${data.qrImage}" alt="QR Code">` : `<div class="upload-icon">\u25A2</div><div class="upload-text">Upload QR Code image</div>`}
                 <input type="file" accept="image/*" onchange="handleImageUpload(event, 'rsvp-qr-upload', 'edit-rsvp-qr-image')">
             </div>
             <input type="hidden" id="edit-rsvp-qr-image" value="${escapeAttr(data.qrImage || '')}">
@@ -327,7 +432,7 @@ function getGalleryEditForm(data) {
     const imagesHtml = images.map((img, i) => `
         <div class="form-group"><label>Photo ${i + 1}</label>
             <div class="image-upload-area" id="gallery-image-upload-${i}">
-                ${img ? `<img src="${img}" alt="Gallery ${i + 1}">` : `<div class="upload-icon">&#128247;</div><div class="upload-text">Upload photo</div>`}
+                ${img ? `<img src="${img}" alt="Gallery ${i + 1}">` : `<div class="upload-icon">\u{1F4F7}</div><div class="upload-text">Upload photo</div>`}
                 <input type="file" accept="image/*" onchange="handleImageUpload(event, 'gallery-image-upload-${i}', 'gallery-image-${i}')">
             </div>
             <input type="hidden" class="gallery-image" id="gallery-image-${i}" value="${escapeAttr(img || '')}">
@@ -341,6 +446,7 @@ function getCustomEditForm(data) {
         <div class="form-group"><label>Content</label><textarea id="edit-custom-content" rows="8">${escapeHtml(data.content || '')}</textarea></div>`;
 }
 
+
 // ===== SAVE SECTION EDITS =====
 function saveCurrentSection() {
     if (!editingSection) return;
@@ -351,6 +457,24 @@ function saveCurrentSection() {
             editingSection.data.name2 = document.getElementById('edit-hero-name2').value;
             editingSection.data.date = document.getElementById('edit-hero-date').value;
             editingSection.data.heroImage = document.getElementById('edit-hero-image').value;
+            break;
+        case 'formal-invite':
+            editingSection.data.heading = document.getElementById('edit-fi-heading').value;
+            editingSection.data.guestName = document.getElementById('edit-fi-guest').value;
+            editingSection.data.message = document.getElementById('edit-fi-message').value;
+            editingSection.data.groomFamily.sideLabel = document.getElementById('edit-fi-groom-label').value;
+            editingSection.data.groomFamily.fatherName = document.getElementById('edit-fi-groom-father').value;
+            editingSection.data.groomFamily.motherName = document.getElementById('edit-fi-groom-mother').value;
+            editingSection.data.groomFamily.address = document.getElementById('edit-fi-groom-addr').value;
+            editingSection.data.brideFamily.sideLabel = document.getElementById('edit-fi-bride-label').value;
+            editingSection.data.brideFamily.fatherName = document.getElementById('edit-fi-bride-father').value;
+            editingSection.data.brideFamily.motherName = document.getElementById('edit-fi-bride-mother').value;
+            editingSection.data.brideFamily.address = document.getElementById('edit-fi-bride-addr').value;
+            editingSection.data.announcement = document.getElementById('edit-fi-announce').value;
+            editingSection.data.groomFullName = document.getElementById('edit-fi-groom-name').value;
+            editingSection.data.groomRole = document.getElementById('edit-fi-groom-role').value;
+            editingSection.data.brideFullName = document.getElementById('edit-fi-bride-name').value;
+            editingSection.data.brideRole = document.getElementById('edit-fi-bride-role').value;
             break;
         case 'love-story':
             editingSection.data.label = document.getElementById('edit-story-label').value;
@@ -387,7 +511,7 @@ function saveCurrentSection() {
 
 function collectTimelineEntries() {
     const entries = [];
-    document.querySelectorAll('#timeline-entries .timeline-entry').forEach((el, i) => {
+    document.querySelectorAll('#timeline-entries .timeline-entry').forEach((el) => {
         entries.push({ date: el.querySelector('.entry-date').value, title: el.querySelector('.entry-title').value, description: el.querySelector('.entry-desc').value, image: el.querySelector('.entry-image').value });
     });
     return entries;
@@ -396,7 +520,7 @@ function collectTimelineEntries() {
 function collectInvitationCards() {
     const cards = [];
     document.querySelectorAll('#invitation-cards .timeline-entry').forEach(el => {
-        cards.push({ label: el.querySelector('.card-label').value, time: el.querySelector('.card-time').value, date: el.querySelector('.card-date').value, venueLabel: el.querySelector('.card-venue-label').value, venueName: el.querySelector('.card-venue-name').value, address: el.querySelector('.card-address').value, note: el.querySelector('.card-note').value });
+        cards.push({ label: el.querySelector('.card-label').value, time: el.querySelector('.card-time').value, date: el.querySelector('.card-date').value, venueLabel: el.querySelector('.card-venue-label').value, venueName: el.querySelector('.card-venue-name').value, address: el.querySelector('.card-address').value, note: el.querySelector('.card-note').value, mapEmbed: el.querySelector('.card-map-embed').value });
     });
     return cards;
 }
@@ -418,7 +542,7 @@ function addTimelineEntry() {
             <div class="form-group"><label>Title</label><input type="text" class="entry-title" value=""></div>
             <div class="form-group"><label>Description</label><textarea class="entry-desc" rows="3"></textarea></div>
             <div class="form-group"><label>Photo</label>
-                <div class="image-upload-area" id="entry-image-upload-${i}"><div class="upload-icon">&#128247;</div><div class="upload-text">Upload photo</div><input type="file" accept="image/*" onchange="handleImageUpload(event, 'entry-image-upload-${i}', 'entry-image-${i}')"></div>
+                <div class="image-upload-area" id="entry-image-upload-${i}"><div class="upload-icon">\u{1F4F7}</div><div class="upload-text">Upload photo</div><input type="file" accept="image/*" onchange="handleImageUpload(event, 'entry-image-upload-${i}', 'entry-image-${i}')"></div>
                 <input type="hidden" class="entry-image" id="entry-image-${i}" value="">
             </div>
         </div>`);
@@ -441,6 +565,10 @@ function addInvitationCard() {
             <div class="form-group"><label>Venue Name</label><input type="text" class="card-venue-name" value=""></div>
             <div class="form-group"><label>Address</label><input type="text" class="card-address" value=""></div>
             <div class="form-group"><label>Note</label><input type="text" class="card-note" value=""></div>
+            <div class="form-group"><label>Google Maps Embed Code</label>
+                <textarea class="card-map-embed" rows="3" placeholder="Paste Google Maps embed iframe code here..."></textarea>
+                <small style="color:var(--text-muted); display:block; margin-top:4px;">Go to Google Maps &rarr; Share &rarr; Embed a map &rarr; Copy the &lt;iframe&gt; code</small>
+            </div>
         </div>`);
 }
 
@@ -455,7 +583,7 @@ function addGallerySlot() {
     const addBtn = body.querySelector('.btn-add-entry');
     addBtn.insertAdjacentHTML('beforebegin', `
         <div class="form-group"><label>Photo ${i + 1}</label>
-            <div class="image-upload-area" id="gallery-image-upload-${i}"><div class="upload-icon">&#128247;</div><div class="upload-text">Upload photo</div><input type="file" accept="image/*" onchange="handleImageUpload(event, 'gallery-image-upload-${i}', 'gallery-image-${i}')"></div>
+            <div class="image-upload-area" id="gallery-image-upload-${i}"><div class="upload-icon">\u{1F4F7}</div><div class="upload-text">Upload photo</div><input type="file" accept="image/*" onchange="handleImageUpload(event, 'gallery-image-upload-${i}', 'gallery-image-${i}')"></div>
             <input type="hidden" class="gallery-image" id="gallery-image-${i}" value="">
         </div>`);
 }
@@ -495,18 +623,14 @@ function handleMusicUpload(event) {
         musicSettings.source = e.target.result;
         musicSettings.fileName = file.name;
         document.getElementById('music-upload-text').textContent = file.name;
-        // Show preview
-        const previewGroup = document.getElementById('music-preview-group');
-        previewGroup.style.display = 'block';
-        const audio = document.getElementById('music-preview');
-        audio.src = e.target.result;
+        document.getElementById('music-preview-group').style.display = 'block';
+        document.getElementById('music-preview').src = e.target.result;
     };
     reader.readAsDataURL(file);
 }
 
 function openMusicModal() {
     openModal('modal-music');
-    // Restore current settings
     document.getElementById('music-source-type').value = musicSettings.sourceType;
     document.getElementById('music-loop').checked = musicSettings.loop;
     document.getElementById('music-autoplay').checked = musicSettings.autoplay;
@@ -534,7 +658,6 @@ function saveMusicSetting() {
     }
     musicSettings.enabled = !!musicSettings.source;
     closeModal('modal-music');
-    // Update music button indicator
     updateMusicButton();
 }
 
@@ -552,13 +675,14 @@ function updateMusicButton() {
     if (musicSettings.enabled) {
         btn.style.background = '#e8f5e9';
         btn.style.borderColor = 'var(--primary)';
-        btn.innerHTML = '&#127925; Music &#10003;';
+        btn.innerHTML = '\u{1F3B5} Music \u2713';
     } else {
         btn.style.background = '';
         btn.style.borderColor = '';
-        btn.innerHTML = '&#127925; Music';
+        btn.innerHTML = '\u{1F3B5} Music';
     }
 }
+
 
 // ===== SECTION MANAGEMENT =====
 function deleteSection(sectionId) {
@@ -578,8 +702,20 @@ function addSection(type) {
 function getDefaultData(type) {
     switch(type) {
         case 'hero': return { subtitle: 'The Wedding Of', name1: 'Bride Name', name2: 'Groom Name', date: 'DD.MM.YYYY', heroImage: '' };
+        case 'formal-invite': return {
+            heading: 'WE CORDIALLY INVITE',
+            guestName: 'Guest Name',
+            message: 'Your presence will make our wedding day even more meaningful',
+            groomFamily: { sideLabel: "Groom's Family", fatherName: 'Mr. Father Name', motherName: 'Mrs. Mother Name', address: 'Address line 1\nAddress line 2' },
+            brideFamily: { sideLabel: "Bride's Family", fatherName: 'Mr. Father Name', motherName: 'Mrs. Mother Name', address: 'Address line 1\nAddress line 2' },
+            announcement: 'We are honored to announce the wedding of our children',
+            groomFullName: 'Groom Full Name',
+            groomRole: 'Son',
+            brideFullName: 'Bride Full Name',
+            brideRole: 'Daughter'
+        };
         case 'love-story': return { label: 'Love Story', title: 'Our Story', entries: [{ date: 'Month Year', title: 'Chapter Title', description: 'Your story here...', image: '' }] };
-        case 'invitation': return { intro: 'We cordially invite you', subtitle: 'Please join our celebration', cards: [{ label: 'INVITATION', time: 'Time', date: 'Date', venueLabel: 'VENUE', venueName: 'Venue Name', address: 'Address', note: 'Your presence is our honor' }] };
+        case 'invitation': return { intro: 'We cordially invite you', subtitle: 'Please join our celebration', cards: [{ label: 'INVITATION', time: 'Time', date: 'Date', venueLabel: 'VENUE', venueName: 'Venue Name', address: 'Address', note: 'Your presence is our honor', mapEmbed: '' }] };
         case 'rsvp': return { title: 'Please confirm your attendance', buttonText: 'Send Confirmation', qrImage: '', qrLabel: 'Scan to confirm' };
         case 'thank-you': return { title: 'Thank You', message: 'Thank you for your love and support.' };
         case 'gallery': return { title: 'Our Moments', images: ['', '', '', ''] };
@@ -626,75 +762,30 @@ function updateSectionsOrder() {
 // ===== EXPORT WITH MUSIC =====
 function exportHTML() {
     const previewHtml = sections.map(section => renderSectionPreview(section)).join('');
-    
-    // Build music HTML for exported invitation
+
     let musicHtml = '';
     let musicScript = '';
     if (musicSettings.enabled && musicSettings.source) {
         musicHtml = `
-    <!-- Background Music -->
     <audio id="bg-music" ${musicSettings.loop ? 'loop' : ''} preload="auto">
         <source src="${musicSettings.source}" type="audio/mpeg">
     </audio>
-    <!-- Music Toggle Button -->
     <button id="music-toggle" class="music-toggle" aria-label="Toggle Music">
-        <svg id="music-icon-on" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
-        </svg>
-        <svg id="music-icon-off" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
-            <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><line x1="1" y1="1" x2="23" y2="23" stroke="red" stroke-width="2"/>
-        </svg>
+        <svg id="music-icon-on" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        <svg id="music-icon-off" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><line x1="1" y1="1" x2="23" y2="23" stroke="red" stroke-width="2"/></svg>
     </button>`;
-        
         musicScript = `
     <script>
-        // Background music with user interaction requirement
         const audio = document.getElementById('bg-music');
         const toggleBtn = document.getElementById('music-toggle');
         const iconOn = document.getElementById('music-icon-on');
         const iconOff = document.getElementById('music-icon-off');
         let musicPlaying = false;
-
-        function playMusic() {
-            audio.play().then(() => {
-                musicPlaying = true;
-                iconOn.style.display = 'block';
-                iconOff.style.display = 'none';
-                toggleBtn.classList.add('playing');
-            }).catch(() => {});
-        }
-
-        function stopMusic() {
-            audio.pause();
-            musicPlaying = false;
-            iconOn.style.display = 'none';
-            iconOff.style.display = 'block';
-            toggleBtn.classList.remove('playing');
-        }
-
-        toggleBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (musicPlaying) stopMusic();
-            else playMusic();
-        });
-
-        ${musicSettings.autoplay ? `
-        // Auto-play on first user interaction
-        let hasInteracted = false;
-        function onFirstInteraction() {
-            if (!hasInteracted) {
-                hasInteracted = true;
-                playMusic();
-                document.removeEventListener('click', onFirstInteraction);
-                document.removeEventListener('touchstart', onFirstInteraction);
-                document.removeEventListener('scroll', onFirstInteraction);
-            }
-        }
-        document.addEventListener('click', onFirstInteraction);
-        document.addEventListener('touchstart', onFirstInteraction);
-        document.addEventListener('scroll', onFirstInteraction);
-        ` : ''}
-    </script>`;
+        function playMusic() { audio.play().then(() => { musicPlaying = true; iconOn.style.display = 'block'; iconOff.style.display = 'none'; toggleBtn.classList.add('playing'); }).catch(() => {}); }
+        function stopMusic() { audio.pause(); musicPlaying = false; iconOn.style.display = 'none'; iconOff.style.display = 'block'; toggleBtn.classList.remove('playing'); }
+        toggleBtn.addEventListener('click', function(e) { e.stopPropagation(); if (musicPlaying) stopMusic(); else playMusic(); });
+        ${musicSettings.autoplay ? `let hasInteracted = false; function onFirstInteraction() { if (!hasInteracted) { hasInteracted = true; playMusic(); document.removeEventListener('click', onFirstInteraction); document.removeEventListener('touchstart', onFirstInteraction); document.removeEventListener('scroll', onFirstInteraction); } } document.addEventListener('click', onFirstInteraction); document.addEventListener('touchstart', onFirstInteraction); document.addEventListener('scroll', onFirstInteraction);` : ''}
+    <\/script>`;
     }
 
     const fullHtml = `<!DOCTYPE html>
@@ -703,7 +794,7 @@ function exportHTML() {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wedding Invitation</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&family=Dancing+Script:wght@400;600;700&display=swap" rel="stylesheet">
     <style>${getExportStyles()}</style>
 </head>
 <body>
@@ -726,7 +817,7 @@ function exportHTML() {
 
 function getExportStyles() {
     return `
-        :root { --primary: #1a5c3a; --primary-light: #2d8f5e; --primary-dark: #0e3d25; --gold: #c9a84c; --gold-light: #e8d48b; --bg-cream: #faf8f5; --text-dark: #2c2c2c; --text-muted: #6b6b6b; --border: #e0ddd8; --radius: 8px; --radius-lg: 16px; --font-display: 'Playfair Display', serif; --font-elegant: 'Cormorant Garamond', serif; --font-body: 'Montserrat', sans-serif; }
+        :root { --primary: #1a5c3a; --primary-light: #2d8f5e; --primary-dark: #0e3d25; --gold: #c9a84c; --gold-light: #e8d48b; --bg-cream: #faf8f5; --text-dark: #2c2c2c; --text-muted: #6b6b6b; --border: #e0ddd8; --radius: 8px; --radius-lg: 16px; --font-display: 'Playfair Display', serif; --font-elegant: 'Cormorant Garamond', serif; --font-body: 'Montserrat', sans-serif; --font-script: 'Dancing Script', cursive; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: var(--font-body); background: #e8e5e0; display: flex; justify-content: center; padding: 20px; min-height: 100vh; }
         .invitation-wrapper { width: 100%; max-width: 480px; background: white; border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
@@ -740,6 +831,22 @@ function getExportStyles() {
         .inv-hero-ampersand { font-family: var(--font-elegant); font-style: italic; color: var(--gold); font-size: 2rem; display: block; margin: 8px 0; }
         .inv-hero-date { font-family: var(--font-elegant); font-size: 1.1rem; color: var(--gold-light); letter-spacing: 1px; }
         .inv-hero-image { width: 160px; height: 160px; border-radius: 50%; border: 3px solid var(--gold); object-fit: cover; margin: 20px auto 0; display: block; }
+        .inv-formal-invite { padding: 60px 24px; background: white; text-align: center; }
+        .inv-formal-heading { font-family: var(--font-body); font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; color: var(--primary-dark); font-weight: 600; margin-bottom: 16px; }
+        .inv-formal-guest-name { font-family: var(--font-script); font-size: 2rem; color: var(--primary); font-weight: 700; font-style: italic; margin-bottom: 24px; }
+        .inv-formal-message { font-family: var(--font-body); font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 40px; line-height: 1.8; }
+        .inv-formal-families { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; text-align: center; }
+        .inv-formal-family-side h4 { font-family: var(--font-display); font-size: 1.1rem; color: var(--primary-dark); margin-bottom: 12px; font-weight: 400; }
+        .inv-formal-family-side .parent-name { font-family: var(--font-body); font-size: 0.75rem; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .inv-formal-family-side .family-address { font-family: var(--font-elegant); font-size: 0.85rem; color: var(--text-muted); font-style: italic; margin-top: 8px; line-height: 1.5; }
+        .inv-formal-divider { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 32px 0; color: var(--gold); }
+        .inv-formal-divider::before, .inv-formal-divider::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, transparent, var(--gold), transparent); }
+        .inv-formal-divider span { font-size: 0.9rem; letter-spacing: 4px; }
+        .inv-formal-announce { font-family: var(--font-body); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dark); margin-bottom: 24px; }
+        .inv-formal-announce strong { color: var(--primary); font-weight: 700; }
+        .inv-formal-couple-name { font-family: var(--font-script); font-size: 2.2rem; color: var(--primary-dark); margin-bottom: 8px; font-weight: 700; }
+        .inv-formal-role { font-family: var(--font-body); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+        .inv-formal-heart { color: var(--primary); font-size: 1.5rem; margin: 12px 0; }
         .inv-love-story { padding: 60px 24px; background: var(--bg-cream); }
         .inv-section-label { text-align: center; font-family: var(--font-body); font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: var(--primary); margin-bottom: 8px; }
         .inv-section-title { text-align: center; font-family: var(--font-display); font-size: 1.6rem; color: var(--primary-dark); margin-bottom: 40px; }
@@ -762,6 +869,9 @@ function getExportStyles() {
         .inv-card-venue-name { font-family: var(--font-display); font-size: 1.3rem; color: var(--primary); font-weight: 700; }
         .inv-card-address { font-family: var(--font-elegant); font-size: 0.9rem; color: var(--text-muted); margin-top: 8px; }
         .inv-card-note { font-family: var(--font-elegant); font-size: 0.85rem; color: var(--text-muted); font-style: italic; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(26,92,58,0.1); }
+        .inv-card-map { margin-top: 16px; border-radius: var(--radius); overflow: hidden; border: 1px solid rgba(26,92,58,0.1); }
+        .inv-card-map iframe { width: 100%; height: 180px; border: none; display: block; }
+        .inv-card-map-placeholder { width: 100%; height: 120px; background: var(--bg-cream); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: var(--text-muted); }
         .inv-rsvp { padding: 60px 24px; background: var(--primary-dark); color: white; text-align: center; }
         .inv-rsvp .inv-section-title { color: white; }
         .inv-rsvp-form { max-width: 320px; margin: 0 auto; }
@@ -785,7 +895,6 @@ function getExportStyles() {
         .inv-gallery-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: var(--text-muted); }
         .inv-custom { padding: 40px 24px; background: white; text-align: center; }
         .inv-custom-content { font-family: var(--font-elegant); font-size: 1rem; color: var(--text-dark); line-height: 1.7; }
-        /* Music Toggle Button */
         .music-toggle { position: fixed; bottom: 24px; right: 24px; width: 50px; height: 50px; border-radius: 50%; background: var(--primary); color: white; border: 2px solid var(--gold); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.2); z-index: 9999; transition: transform 0.3s; }
         .music-toggle:hover { transform: scale(1.1); }
         .music-toggle.playing { animation: pulse 2s infinite; }
@@ -805,13 +914,8 @@ function loadDraft() {
     if (data) {
         try {
             const parsed = JSON.parse(data);
-            if (parsed.sections) {
-                sections = parsed.sections;
-                musicSettings = parsed.musicSettings || musicSettings;
-            } else {
-                // Legacy format (just sections array)
-                sections = parsed;
-            }
+            if (parsed.sections) { sections = parsed.sections; musicSettings = parsed.musicSettings || musicSettings; }
+            else { sections = parsed; }
             renderAll();
             updateMusicButton();
             alert('Draft loaded successfully!');
