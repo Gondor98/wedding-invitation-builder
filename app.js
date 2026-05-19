@@ -1,0 +1,863 @@
+// ===== DATA MODEL =====
+const defaultSections = [
+    {
+        id: generateId(),
+        type: 'hero',
+        data: {
+            subtitle: 'The Wedding Of',
+            name1: 'Minh Anh',
+            name2: 'Quoc Thai',
+            date: '25.12.2025',
+            heroImage: ''
+        }
+    },
+    {
+        id: generateId(),
+        type: 'love-story',
+        data: {
+            label: 'Love Story',
+            title: 'Our Story',
+            entries: [
+                { date: 'March 2018', title: 'First Meeting', description: 'A sunny afternoon, we met through a mutual friend. Among the noise, our eyes met briefly, but it was enough to make time stand still.', image: '' },
+                { date: 'June 2018', title: 'First Messages', description: 'After that day, we started texting - just small talk at first, but enough to make our hearts flutter.', image: '' },
+                { date: 'November 2019', title: 'The Confession', description: 'A sudden rain in late autumn, we took shelter under a small awning. No flowers, no gifts, just the sound of rain and our racing hearts.', image: '' }
+            ]
+        }
+    },
+    {
+        id: generateId(),
+        type: 'invitation',
+        data: {
+            intro: 'We cordially invite you',
+            subtitle: 'Please join us in celebrating our union',
+            cards: [
+                { label: "GROOM'S FAMILY INVITATION", time: 'Ceremony at 10:30 AM', date: 'December 25, 2025', venueLabel: 'FAMILY RESIDENCE', venueName: 'Groom Family Home', address: '123 Main Street, District 1, Ho Chi Minh City', note: 'Your presence is our greatest honor' },
+                { label: "BRIDE'S FAMILY INVITATION", time: 'Reception at 7:30 PM', date: 'December 25, 2025', venueLabel: 'WEDDING RESTAURANT', venueName: 'White Place', address: '456 Wedding Avenue, District 7, Ho Chi Minh City', note: 'Your presence is our greatest honor' }
+            ]
+        }
+    },
+    {
+        id: generateId(),
+        type: 'rsvp',
+        data: {
+            title: 'Please confirm your attendance so we can prepare the best for you',
+            fields: ['name', 'attendance', 'guests', 'message'],
+            buttonText: 'Send Confirmation',
+            qrImage: '',
+            qrLabel: 'Scan to confirm attendance'
+        }
+    },
+    {
+        id: generateId(),
+        type: 'thank-you',
+        data: {
+            title: 'Thank You',
+            message: 'We sincerely thank all family, friends and loved ones who have always supported, accompanied and blessed us on this special journey.\n\nYour love and presence mean the world to us.'
+        }
+    }
+];
+
+let sections = JSON.parse(JSON.stringify(defaultSections));
+let editingSection = null;
+let draggedItem = null;
+
+// Music settings
+let musicSettings = {
+    enabled: false,
+    source: '', // data URL or external URL
+    sourceType: 'file', // 'file' or 'url'
+    loop: true,
+    autoplay: true,
+    fileName: ''
+};
+
+// ===== UTILITY FUNCTIONS =====
+function generateId() {
+    return 'sec_' + Math.random().toString(36).substr(2, 9);
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+function openModal(modalId) {
+    document.getElementById(modalId).style.display = 'flex';
+}
+
+function getSectionTypeName(type) {
+    const names = { 'hero': 'Hero / Cover', 'love-story': 'Love Story', 'invitation': 'Invitation Card', 'rsvp': 'RSVP', 'thank-you': 'Thank You', 'gallery': 'Photo Gallery', 'custom': 'Custom Section' };
+    return names[type] || type;
+}
+
+function getSectionIcon(type) {
+    const icons = { 'hero': '&#128141;', 'love-story': '&#128149;', 'invitation': '&#128140;', 'rsvp': '&#9989;', 'thank-you': '&#128591;', 'gallery': '&#128444;', 'custom': '&#9999;' };
+    return icons[type] || '&#9634;';
+}
+
+// ===== RENDER EDITOR PANEL =====
+function renderEditorPanel() {
+    const list = document.getElementById('sections-list');
+    list.innerHTML = sections.map((section, index) => `
+        <div class="section-card" data-id="${section.id}" draggable="true">
+            <div class="section-card-header">
+                <div class="section-card-title">
+                    <span class="drag-handle">&#8942;&#8942;</span>
+                    <span>${getSectionIcon(section.type)} ${getPreviewTitle(section)}</span>
+                </div>
+                <div class="section-card-actions">
+                    <button class="btn-edit" onclick="editSection('${section.id}')" title="Edit">&#9998;</button>
+                    <button class="btn-delete" onclick="deleteSection('${section.id}')" title="Delete">&#128465;</button>
+                </div>
+            </div>
+            <div class="section-card-type">${getSectionTypeName(section.type)}</div>
+        </div>
+    `).join('');
+    setupDragAndDrop();
+}
+
+function getPreviewTitle(section) {
+    switch(section.type) {
+        case 'hero': return section.data.name1 + ' & ' + section.data.name2;
+        case 'love-story': return section.data.title || 'Love Story';
+        case 'invitation': return 'Invitation Cards';
+        case 'rsvp': return 'RSVP Form';
+        case 'thank-you': return section.data.title || 'Thank You';
+        case 'gallery': return 'Photo Gallery';
+        case 'custom': return section.data.title || 'Custom Section';
+        default: return 'Section';
+    }
+}
+
+// ===== RENDER PREVIEW =====
+function renderPreview(container) {
+    const target = container || document.getElementById('preview-frame');
+    target.innerHTML = sections.map(section => renderSectionPreview(section)).join('');
+}
+
+function renderSectionPreview(section) {
+    switch(section.type) {
+        case 'hero': return renderHeroPreview(section.data);
+        case 'love-story': return renderLoveStoryPreview(section.data);
+        case 'invitation': return renderInvitationPreview(section.data);
+        case 'rsvp': return renderRSVPPreview(section.data);
+        case 'thank-you': return renderThankYouPreview(section.data);
+        case 'gallery': return renderGalleryPreview(section.data);
+        case 'custom': return renderCustomPreview(section.data);
+        default: return '';
+    }
+}
+
+function renderHeroPreview(data) {
+    const heroImg = data.heroImage ? `<img class="inv-hero-image" src="${data.heroImage}" alt="Couple">` : '';
+    return `
+        <section class="inv-section inv-hero">
+            <div class="inv-hero-subtitle">${data.subtitle}</div>
+            <div class="inv-hero-names">${data.name1}<span class="inv-hero-ampersand">&amp;</span>${data.name2}</div>
+            <div class="inv-hero-date">${data.date}</div>
+            ${heroImg}
+        </section>`;
+}
+
+function renderLoveStoryPreview(data) {
+    const entries = (data.entries || []).map(entry => {
+        const img = entry.image ? `<img class="inv-timeline-image" src="${entry.image}" alt="${entry.title}">` : '';
+        return `<div class="inv-timeline-item"><div class="inv-timeline-date">${entry.date}</div><div class="inv-timeline-title">${entry.title}</div><div class="inv-timeline-desc">${entry.description}</div>${img}</div>`;
+    }).join('');
+    return `<section class="inv-section inv-love-story"><div class="inv-section-label">${data.label}</div><div class="inv-section-title">${data.title}</div><div class="inv-timeline">${entries}</div></section>`;
+}
+
+function renderInvitationPreview(data) {
+    const cards = (data.cards || []).map(card => `
+        <div class="inv-card">
+            <div class="inv-card-label">${card.label}</div>
+            <div class="inv-card-time">${card.time}</div>
+            <div class="inv-card-date">${card.date}</div>
+            <div class="inv-card-venue">${card.venueLabel}</div>
+            <div class="inv-card-venue-name">${card.venueName}</div>
+            <div class="inv-card-address">${card.address}</div>
+            <div class="inv-card-note"><em>${card.note}</em></div>
+        </div>`).join('');
+    return `<section class="inv-section inv-invitation"><div class="inv-invitation-intro">${data.intro}</div><div class="inv-invitation-subtitle">${data.subtitle}</div>${cards}</section>`;
+}
+
+function renderRSVPPreview(data) {
+    const qrContent = data.qrImage
+        ? `<img src="${data.qrImage}" alt="QR Code">`
+        : `<div class="inv-rsvp-qr-placeholder">QR Code<br>will appear here</div>`;
+    return `
+        <section class="inv-section inv-rsvp">
+            <div class="inv-section-title">${data.title}</div>
+            <div class="inv-rsvp-form">
+                <div class="inv-rsvp-field"><input type="text" placeholder="Your Name" disabled></div>
+                <div class="inv-rsvp-field"><select disabled><option>Will you attend?</option><option>Yes, I will attend</option><option>Sorry, I cannot attend</option></select></div>
+                <div class="inv-rsvp-field"><input type="number" placeholder="Number of guests" disabled></div>
+                <div class="inv-rsvp-field"><textarea placeholder="Send your wishes..." rows="3" disabled></textarea></div>
+                <button class="inv-rsvp-btn" disabled>${data.buttonText}</button>
+            </div>
+            <div class="inv-rsvp-qr">
+                <div class="inv-rsvp-qr-label">${data.qrLabel}</div>
+                <div class="inv-rsvp-qr-image">${qrContent}</div>
+            </div>
+        </section>`;
+}
+
+function renderThankYouPreview(data) {
+    const message = data.message.replace(/\n/g, '<br>');
+    return `<section class="inv-section inv-thank-you"><div class="inv-section-label">&#10084;</div><div class="inv-section-title">${data.title}</div><div class="inv-thank-you-message">${message}</div></section>`;
+}
+
+function renderGalleryPreview(data) {
+    const images = (data.images || []).map(img => {
+        if (img) return `<div class="inv-gallery-item"><img src="${img}" alt="Gallery"></div>`;
+        return `<div class="inv-gallery-item"><div class="inv-gallery-placeholder">+ Photo</div></div>`;
+    });
+    while (images.length < 4) images.push(`<div class="inv-gallery-item"><div class="inv-gallery-placeholder">+ Photo</div></div>`);
+    return `<section class="inv-section inv-gallery"><div class="inv-section-label">Gallery</div><div class="inv-section-title">${data.title || 'Our Moments'}</div><div class="inv-gallery-grid">${images.join('')}</div></section>`;
+}
+
+function renderCustomPreview(data) {
+    const content = (data.content || '').replace(/\n/g, '<br>');
+    return `<section class="inv-section inv-custom">${data.title ? `<div class="inv-section-title">${data.title}</div>` : ''}<div class="inv-custom-content">${content}</div></section>`;
+}
+
+// ===== SECTION EDITING =====
+function editSection(sectionId) {
+    const section = sections.find(s => s.id === sectionId);
+    if (!section) return;
+    editingSection = section;
+    document.getElementById('edit-modal-title').textContent = 'Edit: ' + getSectionTypeName(section.type);
+    document.getElementById('edit-modal-body').innerHTML = getEditForm(section);
+    openModal('modal-edit-section');
+}
+
+function getEditForm(section) {
+    switch(section.type) {
+        case 'hero': return getHeroEditForm(section.data);
+        case 'love-story': return getLoveStoryEditForm(section.data);
+        case 'invitation': return getInvitationEditForm(section.data);
+        case 'rsvp': return getRSVPEditForm(section.data);
+        case 'thank-you': return getThankYouEditForm(section.data);
+        case 'gallery': return getGalleryEditForm(section.data);
+        case 'custom': return getCustomEditForm(section.data);
+        default: return '<p>Unknown section type</p>';
+    }
+}
+
+function getHeroEditForm(data) {
+    return `
+        <div class="form-group"><label>Subtitle</label><input type="text" id="edit-hero-subtitle" value="${escapeAttr(data.subtitle)}"></div>
+        <div class="form-row">
+            <div class="form-group"><label>Name 1 (Bride)</label><input type="text" id="edit-hero-name1" value="${escapeAttr(data.name1)}"></div>
+            <div class="form-group"><label>Name 2 (Groom)</label><input type="text" id="edit-hero-name2" value="${escapeAttr(data.name2)}"></div>
+        </div>
+        <div class="form-group"><label>Wedding Date</label><input type="text" id="edit-hero-date" value="${escapeAttr(data.date)}" placeholder="e.g., 25.12.2025"></div>
+        <div class="form-group"><label>Cover Photo (Optional)</label>
+            <div class="image-upload-area" id="hero-image-upload">
+                ${data.heroImage ? `<img src="${data.heroImage}" alt="Cover">` : `<div class="upload-icon">&#128247;</div><div class="upload-text">Click or drag to upload cover photo</div>`}
+                <input type="file" accept="image/*" onchange="handleImageUpload(event, 'hero-image-upload', 'edit-hero-image')">
+            </div>
+            <input type="hidden" id="edit-hero-image" value="${escapeAttr(data.heroImage || '')}">
+        </div>`;
+}
+
+function getLoveStoryEditForm(data) {
+    const entriesHtml = (data.entries || []).map((entry, i) => `
+        <div class="timeline-entry" data-index="${i}">
+            <div class="timeline-entry-header"><strong>Entry ${i + 1}</strong><button class="btn-remove-entry" onclick="removeTimelineEntry(${i})">&#10005; Remove</button></div>
+            <div class="form-group"><label>Date</label><input type="text" class="entry-date" value="${escapeAttr(entry.date)}" placeholder="e.g., March 2018"></div>
+            <div class="form-group"><label>Title</label><input type="text" class="entry-title" value="${escapeAttr(entry.title)}"></div>
+            <div class="form-group"><label>Description</label><textarea class="entry-desc" rows="3">${escapeHtml(entry.description)}</textarea></div>
+            <div class="form-group"><label>Photo</label>
+                <div class="image-upload-area" id="entry-image-upload-${i}">
+                    ${entry.image ? `<img src="${entry.image}" alt="Photo">` : `<div class="upload-icon">&#128247;</div><div class="upload-text">Upload photo</div>`}
+                    <input type="file" accept="image/*" onchange="handleImageUpload(event, 'entry-image-upload-${i}', 'entry-image-${i}')">
+                </div>
+                <input type="hidden" class="entry-image" id="entry-image-${i}" value="${escapeAttr(entry.image || '')}">
+            </div>
+        </div>`).join('');
+    return `
+        <div class="form-group"><label>Section Label</label><input type="text" id="edit-story-label" value="${escapeAttr(data.label)}"></div>
+        <div class="form-group"><label>Section Title</label><input type="text" id="edit-story-title" value="${escapeAttr(data.title)}"></div>
+        <div class="form-group"><label>Timeline Entries</label><div class="timeline-entries" id="timeline-entries">${entriesHtml}</div><button class="btn-add-entry" onclick="addTimelineEntry()">+ Add Timeline Entry</button></div>`;
+}
+
+function getInvitationEditForm(data) {
+    const cardsHtml = (data.cards || []).map((card, i) => `
+        <div class="timeline-entry" data-index="${i}">
+            <div class="timeline-entry-header"><strong>Card ${i + 1}</strong><button class="btn-remove-entry" onclick="removeInvitationCard(${i})">&#10005; Remove</button></div>
+            <div class="form-group"><label>Card Label</label><input type="text" class="card-label" value="${escapeAttr(card.label)}"></div>
+            <div class="form-row">
+                <div class="form-group"><label>Time</label><input type="text" class="card-time" value="${escapeAttr(card.time)}"></div>
+                <div class="form-group"><label>Date</label><input type="text" class="card-date" value="${escapeAttr(card.date)}"></div>
+            </div>
+            <div class="form-group"><label>Venue Label</label><input type="text" class="card-venue-label" value="${escapeAttr(card.venueLabel)}"></div>
+            <div class="form-group"><label>Venue Name</label><input type="text" class="card-venue-name" value="${escapeAttr(card.venueName)}"></div>
+            <div class="form-group"><label>Address</label><input type="text" class="card-address" value="${escapeAttr(card.address)}"></div>
+            <div class="form-group"><label>Note</label><input type="text" class="card-note" value="${escapeAttr(card.note)}"></div>
+        </div>`).join('');
+    return `
+        <div class="form-group"><label>Intro Text</label><input type="text" id="edit-inv-intro" value="${escapeAttr(data.intro)}"></div>
+        <div class="form-group"><label>Subtitle</label><input type="text" id="edit-inv-subtitle" value="${escapeAttr(data.subtitle)}"></div>
+        <div class="form-group"><label>Invitation Cards</label><div class="timeline-entries" id="invitation-cards">${cardsHtml}</div><button class="btn-add-entry" onclick="addInvitationCard()">+ Add Invitation Card</button></div>`;
+}
+
+function getRSVPEditForm(data) {
+    return `
+        <div class="form-group"><label>Section Title</label><textarea id="edit-rsvp-title" rows="2">${escapeHtml(data.title)}</textarea></div>
+        <div class="form-group"><label>Button Text</label><input type="text" id="edit-rsvp-btn" value="${escapeAttr(data.buttonText)}"></div>
+        <div class="form-group"><label>QR Code Label</label><input type="text" id="edit-rsvp-qr-label" value="${escapeAttr(data.qrLabel)}"></div>
+        <div class="form-group"><label>QR Code Image</label>
+            <div class="image-upload-area" id="rsvp-qr-upload">
+                ${data.qrImage ? `<img src="${data.qrImage}" alt="QR Code">` : `<div class="upload-icon">&#9634;</div><div class="upload-text">Upload QR Code image</div>`}
+                <input type="file" accept="image/*" onchange="handleImageUpload(event, 'rsvp-qr-upload', 'edit-rsvp-qr-image')">
+            </div>
+            <input type="hidden" id="edit-rsvp-qr-image" value="${escapeAttr(data.qrImage || '')}">
+            <small style="color: var(--text-muted); margin-top: 4px; display: block;">Upload your QR code for guests to scan and confirm attendance or send gifts.</small>
+        </div>`;
+}
+
+function getThankYouEditForm(data) {
+    return `
+        <div class="form-group"><label>Title</label><input type="text" id="edit-thanks-title" value="${escapeAttr(data.title)}"></div>
+        <div class="form-group"><label>Message</label><textarea id="edit-thanks-message" rows="6">${escapeHtml(data.message)}</textarea></div>`;
+}
+
+function getGalleryEditForm(data) {
+    const images = data.images || ['', '', '', ''];
+    const imagesHtml = images.map((img, i) => `
+        <div class="form-group"><label>Photo ${i + 1}</label>
+            <div class="image-upload-area" id="gallery-image-upload-${i}">
+                ${img ? `<img src="${img}" alt="Gallery ${i + 1}">` : `<div class="upload-icon">&#128247;</div><div class="upload-text">Upload photo</div>`}
+                <input type="file" accept="image/*" onchange="handleImageUpload(event, 'gallery-image-upload-${i}', 'gallery-image-${i}')">
+            </div>
+            <input type="hidden" class="gallery-image" id="gallery-image-${i}" value="${escapeAttr(img || '')}">
+        </div>`).join('');
+    return `<div class="form-group"><label>Gallery Title</label><input type="text" id="edit-gallery-title" value="${escapeAttr(data.title || 'Our Moments')}"></div>${imagesHtml}<button class="btn-add-entry" onclick="addGallerySlot()">+ Add Photo Slot</button>`;
+}
+
+function getCustomEditForm(data) {
+    return `
+        <div class="form-group"><label>Title (Optional)</label><input type="text" id="edit-custom-title" value="${escapeAttr(data.title || '')}"></div>
+        <div class="form-group"><label>Content</label><textarea id="edit-custom-content" rows="8">${escapeHtml(data.content || '')}</textarea></div>`;
+}
+
+// ===== SAVE SECTION EDITS =====
+function saveCurrentSection() {
+    if (!editingSection) return;
+    switch(editingSection.type) {
+        case 'hero':
+            editingSection.data.subtitle = document.getElementById('edit-hero-subtitle').value;
+            editingSection.data.name1 = document.getElementById('edit-hero-name1').value;
+            editingSection.data.name2 = document.getElementById('edit-hero-name2').value;
+            editingSection.data.date = document.getElementById('edit-hero-date').value;
+            editingSection.data.heroImage = document.getElementById('edit-hero-image').value;
+            break;
+        case 'love-story':
+            editingSection.data.label = document.getElementById('edit-story-label').value;
+            editingSection.data.title = document.getElementById('edit-story-title').value;
+            editingSection.data.entries = collectTimelineEntries();
+            break;
+        case 'invitation':
+            editingSection.data.intro = document.getElementById('edit-inv-intro').value;
+            editingSection.data.subtitle = document.getElementById('edit-inv-subtitle').value;
+            editingSection.data.cards = collectInvitationCards();
+            break;
+        case 'rsvp':
+            editingSection.data.title = document.getElementById('edit-rsvp-title').value;
+            editingSection.data.buttonText = document.getElementById('edit-rsvp-btn').value;
+            editingSection.data.qrLabel = document.getElementById('edit-rsvp-qr-label').value;
+            editingSection.data.qrImage = document.getElementById('edit-rsvp-qr-image').value;
+            break;
+        case 'thank-you':
+            editingSection.data.title = document.getElementById('edit-thanks-title').value;
+            editingSection.data.message = document.getElementById('edit-thanks-message').value;
+            break;
+        case 'gallery':
+            editingSection.data.title = document.getElementById('edit-gallery-title').value;
+            editingSection.data.images = collectGalleryImages();
+            break;
+        case 'custom':
+            editingSection.data.title = document.getElementById('edit-custom-title').value;
+            editingSection.data.content = document.getElementById('edit-custom-content').value;
+            break;
+    }
+    closeModal('modal-edit-section');
+    renderAll();
+}
+
+function collectTimelineEntries() {
+    const entries = [];
+    document.querySelectorAll('#timeline-entries .timeline-entry').forEach((el, i) => {
+        entries.push({ date: el.querySelector('.entry-date').value, title: el.querySelector('.entry-title').value, description: el.querySelector('.entry-desc').value, image: el.querySelector('.entry-image').value });
+    });
+    return entries;
+}
+
+function collectInvitationCards() {
+    const cards = [];
+    document.querySelectorAll('#invitation-cards .timeline-entry').forEach(el => {
+        cards.push({ label: el.querySelector('.card-label').value, time: el.querySelector('.card-time').value, date: el.querySelector('.card-date').value, venueLabel: el.querySelector('.card-venue-label').value, venueName: el.querySelector('.card-venue-name').value, address: el.querySelector('.card-address').value, note: el.querySelector('.card-note').value });
+    });
+    return cards;
+}
+
+function collectGalleryImages() {
+    const images = [];
+    document.querySelectorAll('.gallery-image').forEach(el => images.push(el.value));
+    return images;
+}
+
+// ===== ADD/REMOVE HELPERS =====
+function addTimelineEntry() {
+    const container = document.getElementById('timeline-entries');
+    const i = container.querySelectorAll('.timeline-entry').length;
+    container.insertAdjacentHTML('beforeend', `
+        <div class="timeline-entry" data-index="${i}">
+            <div class="timeline-entry-header"><strong>Entry ${i + 1}</strong><button class="btn-remove-entry" onclick="removeTimelineEntry(${i})">&#10005; Remove</button></div>
+            <div class="form-group"><label>Date</label><input type="text" class="entry-date" value="" placeholder="e.g., March 2018"></div>
+            <div class="form-group"><label>Title</label><input type="text" class="entry-title" value=""></div>
+            <div class="form-group"><label>Description</label><textarea class="entry-desc" rows="3"></textarea></div>
+            <div class="form-group"><label>Photo</label>
+                <div class="image-upload-area" id="entry-image-upload-${i}"><div class="upload-icon">&#128247;</div><div class="upload-text">Upload photo</div><input type="file" accept="image/*" onchange="handleImageUpload(event, 'entry-image-upload-${i}', 'entry-image-${i}')"></div>
+                <input type="hidden" class="entry-image" id="entry-image-${i}" value="">
+            </div>
+        </div>`);
+}
+
+function removeTimelineEntry(index) {
+    const entries = document.querySelectorAll('#timeline-entries .timeline-entry');
+    if (entries[index]) entries[index].remove();
+}
+
+function addInvitationCard() {
+    const container = document.getElementById('invitation-cards');
+    const i = container.querySelectorAll('.timeline-entry').length;
+    container.insertAdjacentHTML('beforeend', `
+        <div class="timeline-entry" data-index="${i}">
+            <div class="timeline-entry-header"><strong>Card ${i + 1}</strong><button class="btn-remove-entry" onclick="removeInvitationCard(${i})">&#10005; Remove</button></div>
+            <div class="form-group"><label>Card Label</label><input type="text" class="card-label" value=""></div>
+            <div class="form-row"><div class="form-group"><label>Time</label><input type="text" class="card-time" value=""></div><div class="form-group"><label>Date</label><input type="text" class="card-date" value=""></div></div>
+            <div class="form-group"><label>Venue Label</label><input type="text" class="card-venue-label" value=""></div>
+            <div class="form-group"><label>Venue Name</label><input type="text" class="card-venue-name" value=""></div>
+            <div class="form-group"><label>Address</label><input type="text" class="card-address" value=""></div>
+            <div class="form-group"><label>Note</label><input type="text" class="card-note" value=""></div>
+        </div>`);
+}
+
+function removeInvitationCard(index) {
+    const entries = document.querySelectorAll('#invitation-cards .timeline-entry');
+    if (entries[index]) entries[index].remove();
+}
+
+function addGallerySlot() {
+    const body = document.getElementById('edit-modal-body');
+    const i = body.querySelectorAll('.gallery-image').length;
+    const addBtn = body.querySelector('.btn-add-entry');
+    addBtn.insertAdjacentHTML('beforebegin', `
+        <div class="form-group"><label>Photo ${i + 1}</label>
+            <div class="image-upload-area" id="gallery-image-upload-${i}"><div class="upload-icon">&#128247;</div><div class="upload-text">Upload photo</div><input type="file" accept="image/*" onchange="handleImageUpload(event, 'gallery-image-upload-${i}', 'gallery-image-${i}')"></div>
+            <input type="hidden" class="gallery-image" id="gallery-image-${i}" value="">
+        </div>`);
+}
+
+// ===== IMAGE HANDLING =====
+function handleImageUpload(event, uploadAreaId, hiddenInputId) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const dataUrl = e.target.result;
+        document.getElementById(hiddenInputId).value = dataUrl;
+        const uploadArea = document.getElementById(uploadAreaId);
+        const fileInput = uploadArea.querySelector('input[type="file"]');
+        uploadArea.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = dataUrl;
+        img.alt = 'Uploaded';
+        uploadArea.appendChild(img);
+        uploadArea.appendChild(fileInput);
+    };
+    reader.readAsDataURL(file);
+}
+
+// ===== MUSIC FUNCTIONS =====
+function toggleMusicSource() {
+    const sourceType = document.getElementById('music-source-type').value;
+    document.getElementById('music-file-group').style.display = sourceType === 'file' ? 'block' : 'none';
+    document.getElementById('music-url-group').style.display = sourceType === 'url' ? 'block' : 'none';
+}
+
+function handleMusicUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        musicSettings.source = e.target.result;
+        musicSettings.fileName = file.name;
+        document.getElementById('music-upload-text').textContent = file.name;
+        // Show preview
+        const previewGroup = document.getElementById('music-preview-group');
+        previewGroup.style.display = 'block';
+        const audio = document.getElementById('music-preview');
+        audio.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function openMusicModal() {
+    openModal('modal-music');
+    // Restore current settings
+    document.getElementById('music-source-type').value = musicSettings.sourceType;
+    document.getElementById('music-loop').checked = musicSettings.loop;
+    document.getElementById('music-autoplay').checked = musicSettings.autoplay;
+    if (musicSettings.sourceType === 'url' && musicSettings.source) {
+        document.getElementById('music-url-input').value = musicSettings.source;
+    }
+    if (musicSettings.fileName) {
+        document.getElementById('music-upload-text').textContent = musicSettings.fileName;
+    }
+    if (musicSettings.source) {
+        document.getElementById('music-preview-group').style.display = 'block';
+        document.getElementById('music-preview').src = musicSettings.source;
+    }
+    toggleMusicSource();
+}
+
+function saveMusicSetting() {
+    const sourceType = document.getElementById('music-source-type').value;
+    musicSettings.sourceType = sourceType;
+    musicSettings.loop = document.getElementById('music-loop').checked;
+    musicSettings.autoplay = document.getElementById('music-autoplay').checked;
+    if (sourceType === 'url') {
+        musicSettings.source = document.getElementById('music-url-input').value;
+        musicSettings.fileName = '';
+    }
+    musicSettings.enabled = !!musicSettings.source;
+    closeModal('modal-music');
+    // Update music button indicator
+    updateMusicButton();
+}
+
+function removeMusicSetting() {
+    musicSettings = { enabled: false, source: '', sourceType: 'file', loop: true, autoplay: true, fileName: '' };
+    document.getElementById('music-preview-group').style.display = 'none';
+    document.getElementById('music-upload-text').textContent = 'Click to upload audio file';
+    document.getElementById('music-url-input').value = '';
+    closeModal('modal-music');
+    updateMusicButton();
+}
+
+function updateMusicButton() {
+    const btn = document.getElementById('btn-music');
+    if (musicSettings.enabled) {
+        btn.style.background = '#e8f5e9';
+        btn.style.borderColor = 'var(--primary)';
+        btn.innerHTML = '&#127925; Music &#10003;';
+    } else {
+        btn.style.background = '';
+        btn.style.borderColor = '';
+        btn.innerHTML = '&#127925; Music';
+    }
+}
+
+// ===== SECTION MANAGEMENT =====
+function deleteSection(sectionId) {
+    if (!confirm('Are you sure you want to remove this section?')) return;
+    sections = sections.filter(s => s.id !== sectionId);
+    renderAll();
+}
+
+function addSection(type) {
+    let newSection = { id: generateId(), type: type, data: getDefaultData(type) };
+    sections.push(newSection);
+    closeModal('modal-add-section');
+    renderAll();
+    editSection(newSection.id);
+}
+
+function getDefaultData(type) {
+    switch(type) {
+        case 'hero': return { subtitle: 'The Wedding Of', name1: 'Bride Name', name2: 'Groom Name', date: 'DD.MM.YYYY', heroImage: '' };
+        case 'love-story': return { label: 'Love Story', title: 'Our Story', entries: [{ date: 'Month Year', title: 'Chapter Title', description: 'Your story here...', image: '' }] };
+        case 'invitation': return { intro: 'We cordially invite you', subtitle: 'Please join our celebration', cards: [{ label: 'INVITATION', time: 'Time', date: 'Date', venueLabel: 'VENUE', venueName: 'Venue Name', address: 'Address', note: 'Your presence is our honor' }] };
+        case 'rsvp': return { title: 'Please confirm your attendance', buttonText: 'Send Confirmation', qrImage: '', qrLabel: 'Scan to confirm' };
+        case 'thank-you': return { title: 'Thank You', message: 'Thank you for your love and support.' };
+        case 'gallery': return { title: 'Our Moments', images: ['', '', '', ''] };
+        case 'custom': return { title: '', content: 'Your content here...' };
+        default: return {};
+    }
+}
+
+// ===== DRAG & DROP =====
+function setupDragAndDrop() {
+    const cards = document.querySelectorAll('.section-card');
+    cards.forEach(card => {
+        card.addEventListener('dragstart', function(e) { draggedItem = this; this.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; });
+        card.addEventListener('dragend', function() { this.classList.remove('dragging'); draggedItem = null; updateSectionsOrder(); });
+        card.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            const list = document.getElementById('sections-list');
+            const afterElement = getDragAfterElement(list, e.clientY);
+            if (draggedItem && afterElement) list.insertBefore(draggedItem, afterElement);
+            else if (draggedItem) list.appendChild(draggedItem);
+        });
+    });
+}
+
+function getDragAfterElement(container, y) {
+    const elements = [...container.querySelectorAll('.section-card:not(.dragging)')];
+    return elements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) return { offset, element: child };
+        return closest;
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
+function updateSectionsOrder() {
+    const cards = document.querySelectorAll('.section-card');
+    const newOrder = [];
+    cards.forEach(card => { const s = sections.find(sec => sec.id === card.dataset.id); if (s) newOrder.push(s); });
+    sections = newOrder;
+    renderPreview();
+}
+
+// ===== EXPORT WITH MUSIC =====
+function exportHTML() {
+    const previewHtml = sections.map(section => renderSectionPreview(section)).join('');
+    
+    // Build music HTML for exported invitation
+    let musicHtml = '';
+    let musicScript = '';
+    if (musicSettings.enabled && musicSettings.source) {
+        musicHtml = `
+    <!-- Background Music -->
+    <audio id="bg-music" ${musicSettings.loop ? 'loop' : ''} preload="auto">
+        <source src="${musicSettings.source}" type="audio/mpeg">
+    </audio>
+    <!-- Music Toggle Button -->
+    <button id="music-toggle" class="music-toggle" aria-label="Toggle Music">
+        <svg id="music-icon-on" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+        </svg>
+        <svg id="music-icon-off" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+            <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><line x1="1" y1="1" x2="23" y2="23" stroke="red" stroke-width="2"/>
+        </svg>
+    </button>`;
+        
+        musicScript = `
+    <script>
+        // Background music with user interaction requirement
+        const audio = document.getElementById('bg-music');
+        const toggleBtn = document.getElementById('music-toggle');
+        const iconOn = document.getElementById('music-icon-on');
+        const iconOff = document.getElementById('music-icon-off');
+        let musicPlaying = false;
+
+        function playMusic() {
+            audio.play().then(() => {
+                musicPlaying = true;
+                iconOn.style.display = 'block';
+                iconOff.style.display = 'none';
+                toggleBtn.classList.add('playing');
+            }).catch(() => {});
+        }
+
+        function stopMusic() {
+            audio.pause();
+            musicPlaying = false;
+            iconOn.style.display = 'none';
+            iconOff.style.display = 'block';
+            toggleBtn.classList.remove('playing');
+        }
+
+        toggleBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (musicPlaying) stopMusic();
+            else playMusic();
+        });
+
+        ${musicSettings.autoplay ? `
+        // Auto-play on first user interaction
+        let hasInteracted = false;
+        function onFirstInteraction() {
+            if (!hasInteracted) {
+                hasInteracted = true;
+                playMusic();
+                document.removeEventListener('click', onFirstInteraction);
+                document.removeEventListener('touchstart', onFirstInteraction);
+                document.removeEventListener('scroll', onFirstInteraction);
+            }
+        }
+        document.addEventListener('click', onFirstInteraction);
+        document.addEventListener('touchstart', onFirstInteraction);
+        document.addEventListener('scroll', onFirstInteraction);
+        ` : ''}
+    </script>`;
+    }
+
+    const fullHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Invitation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>${getExportStyles()}</style>
+</head>
+<body>
+    ${musicHtml}
+    <div class="invitation-wrapper">
+        ${previewHtml}
+    </div>
+    ${musicScript}
+</body>
+</html>`;
+
+    const blob = new Blob([fullHtml], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'wedding-invitation.html';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function getExportStyles() {
+    return `
+        :root { --primary: #1a5c3a; --primary-light: #2d8f5e; --primary-dark: #0e3d25; --gold: #c9a84c; --gold-light: #e8d48b; --bg-cream: #faf8f5; --text-dark: #2c2c2c; --text-muted: #6b6b6b; --border: #e0ddd8; --radius: 8px; --radius-lg: 16px; --font-display: 'Playfair Display', serif; --font-elegant: 'Cormorant Garamond', serif; --font-body: 'Montserrat', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-body); background: #e8e5e0; display: flex; justify-content: center; padding: 20px; min-height: 100vh; }
+        .invitation-wrapper { width: 100%; max-width: 480px; background: white; border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+        .inv-section { position: relative; }
+        .inv-hero { background: var(--primary-dark); color: white; text-align: center; padding: 80px 30px; position: relative; overflow: hidden; background-image: linear-gradient(135deg, #0e3d25 0%, #1a5c3a 50%, #0e3d25 100%); }
+        .inv-hero::before, .inv-hero::after { content: ''; position: absolute; width: 150px; height: 150px; background-size: contain; background-repeat: no-repeat; opacity: 0.3; }
+        .inv-hero::before { top: 0; right: 0; background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M90,10 Q95,30 80,50 Q65,70 50,60 Q35,50 40,30 Q45,10 60,5 Q75,0 90,10Z" fill="rgba(201,168,76,0.4)"/></svg>'); }
+        .inv-hero::after { bottom: 0; left: 0; background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M10,90 Q5,70 20,50 Q35,30 50,40 Q65,50 60,70 Q55,90 40,95 Q25,100 10,90Z" fill="rgba(201,168,76,0.4)"/></svg>'); }
+        .inv-hero-subtitle { font-family: var(--font-body); font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold-light); margin-bottom: 16px; }
+        .inv-hero-names { font-family: var(--font-display); font-size: 2.4rem; font-weight: 700; line-height: 1.3; margin-bottom: 16px; }
+        .inv-hero-ampersand { font-family: var(--font-elegant); font-style: italic; color: var(--gold); font-size: 2rem; display: block; margin: 8px 0; }
+        .inv-hero-date { font-family: var(--font-elegant); font-size: 1.1rem; color: var(--gold-light); letter-spacing: 1px; }
+        .inv-hero-image { width: 160px; height: 160px; border-radius: 50%; border: 3px solid var(--gold); object-fit: cover; margin: 20px auto 0; display: block; }
+        .inv-love-story { padding: 60px 24px; background: var(--bg-cream); }
+        .inv-section-label { text-align: center; font-family: var(--font-body); font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: var(--primary); margin-bottom: 8px; }
+        .inv-section-title { text-align: center; font-family: var(--font-display); font-size: 1.6rem; color: var(--primary-dark); margin-bottom: 40px; }
+        .inv-timeline { position: relative; padding-left: 30px; }
+        .inv-timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: var(--gold); }
+        .inv-timeline-item { position: relative; margin-bottom: 40px; }
+        .inv-timeline-item::before { content: ''; position: absolute; left: -26px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--gold); border: 2px solid white; box-shadow: 0 0 0 2px var(--gold); }
+        .inv-timeline-date { font-family: var(--font-elegant); font-size: 0.9rem; color: var(--gold); font-weight: 600; margin-bottom: 4px; }
+        .inv-timeline-title { font-family: var(--font-display); font-size: 1.1rem; color: var(--primary-dark); margin-bottom: 8px; }
+        .inv-timeline-desc { font-family: var(--font-elegant); font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; }
+        .inv-timeline-image { width: 100%; border-radius: var(--radius); margin-top: 12px; object-fit: cover; max-height: 200px; }
+        .inv-invitation { padding: 60px 24px; background: white; text-align: center; }
+        .inv-invitation-intro { font-family: var(--font-elegant); font-size: 1.1rem; color: var(--text-muted); margin-bottom: 8px; font-style: italic; }
+        .inv-invitation-subtitle { font-family: var(--font-elegant); font-size: 0.95rem; color: var(--text-muted); margin-bottom: 40px; }
+        .inv-card { background: linear-gradient(135deg, #f8fdf9 0%, #eef7f0 100%); border: 1px solid rgba(26,92,58,0.15); border-radius: var(--radius-lg); padding: 32px 24px; margin-bottom: 24px; }
+        .inv-card-label { font-family: var(--font-body); font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: var(--primary); margin-bottom: 16px; font-weight: 600; }
+        .inv-card-time { font-family: var(--font-display); font-size: 1.1rem; color: var(--primary-dark); margin-bottom: 8px; }
+        .inv-card-date { font-family: var(--font-elegant); font-size: 0.95rem; color: var(--text-muted); margin-bottom: 16px; }
+        .inv-card-venue { font-family: var(--font-body); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 4px; }
+        .inv-card-venue-name { font-family: var(--font-display); font-size: 1.3rem; color: var(--primary); font-weight: 700; }
+        .inv-card-address { font-family: var(--font-elegant); font-size: 0.9rem; color: var(--text-muted); margin-top: 8px; }
+        .inv-card-note { font-family: var(--font-elegant); font-size: 0.85rem; color: var(--text-muted); font-style: italic; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(26,92,58,0.1); }
+        .inv-rsvp { padding: 60px 24px; background: var(--primary-dark); color: white; text-align: center; }
+        .inv-rsvp .inv-section-title { color: white; }
+        .inv-rsvp-form { max-width: 320px; margin: 0 auto; }
+        .inv-rsvp-field { margin-bottom: 16px; }
+        .inv-rsvp-field input, .inv-rsvp-field textarea, .inv-rsvp-field select { width: 100%; padding: 12px 16px; border: 1px solid rgba(255,255,255,0.2); border-radius: var(--radius); background: rgba(255,255,255,0.08); color: white; font-family: var(--font-body); font-size: 0.9rem; }
+        .inv-rsvp-field input::placeholder, .inv-rsvp-field textarea::placeholder { color: rgba(255,255,255,0.5); }
+        .inv-rsvp-field select { appearance: none; }
+        .inv-rsvp-field select option { background: var(--primary-dark); color: white; }
+        .inv-rsvp-btn { width: 100%; padding: 14px; background: var(--gold); color: var(--primary-dark); border: none; border-radius: var(--radius); font-family: var(--font-body); font-weight: 600; font-size: 0.9rem; cursor: pointer; letter-spacing: 1px; text-transform: uppercase; margin-top: 8px; }
+        .inv-rsvp-qr { margin-top: 32px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.15); }
+        .inv-rsvp-qr-label { font-family: var(--font-body); font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-light); margin-bottom: 12px; }
+        .inv-rsvp-qr-image { width: 160px; height: 160px; border: 2px dashed rgba(255,255,255,0.3); border-radius: var(--radius); margin: 0 auto; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); overflow: hidden; }
+        .inv-rsvp-qr-image img { width: 100%; height: 100%; object-fit: contain; }
+        .inv-rsvp-qr-placeholder { font-size: 0.8rem; color: rgba(255,255,255,0.4); text-align: center; padding: 10px; }
+        .inv-thank-you { padding: 60px 24px; background: var(--bg-cream); text-align: center; }
+        .inv-thank-you-message { font-family: var(--font-elegant); font-size: 1.05rem; color: var(--text-muted); line-height: 1.8; max-width: 360px; margin: 0 auto; }
+        .inv-gallery { padding: 60px 24px; background: white; }
+        .inv-gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .inv-gallery-item { aspect-ratio: 1; border-radius: var(--radius); overflow: hidden; background: var(--bg-cream); }
+        .inv-gallery-item img { width: 100%; height: 100%; object-fit: cover; }
+        .inv-gallery-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: var(--text-muted); }
+        .inv-custom { padding: 40px 24px; background: white; text-align: center; }
+        .inv-custom-content { font-family: var(--font-elegant); font-size: 1rem; color: var(--text-dark); line-height: 1.7; }
+        /* Music Toggle Button */
+        .music-toggle { position: fixed; bottom: 24px; right: 24px; width: 50px; height: 50px; border-radius: 50%; background: var(--primary); color: white; border: 2px solid var(--gold); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.2); z-index: 9999; transition: transform 0.3s; }
+        .music-toggle:hover { transform: scale(1.1); }
+        .music-toggle.playing { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { box-shadow: 0 4px 16px rgba(0,0,0,0.2); } 50% { box-shadow: 0 4px 24px rgba(201,168,76,0.5); } }
+    `;
+}
+
+// ===== SAVE / LOAD =====
+function saveDraft() {
+    const data = JSON.stringify({ sections, musicSettings });
+    localStorage.setItem('wedding-invitation-draft', data);
+    alert('Draft saved successfully!');
+}
+
+function loadDraft() {
+    const data = localStorage.getItem('wedding-invitation-draft');
+    if (data) {
+        try {
+            const parsed = JSON.parse(data);
+            if (parsed.sections) {
+                sections = parsed.sections;
+                musicSettings = parsed.musicSettings || musicSettings;
+            } else {
+                // Legacy format (just sections array)
+                sections = parsed;
+            }
+            renderAll();
+            updateMusicButton();
+            alert('Draft loaded successfully!');
+        } catch(e) { alert('Error loading draft.'); }
+    } else { alert('No saved draft found.'); }
+}
+
+// ===== FULL PREVIEW =====
+function showFullPreview() {
+    openModal('modal-full-preview');
+    const body = document.getElementById('full-preview-body');
+    body.innerHTML = '<div class="preview-frame" style="max-width:480px;width:100%;"></div>';
+    renderPreview(body.querySelector('.preview-frame'));
+}
+
+// ===== HELPERS =====
+function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+function escapeAttr(text) { return text.replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+// ===== RENDER ALL =====
+function renderAll() { renderEditorPanel(); renderPreview(); }
+
+// ===== INITIALIZATION =====
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('btn-add-section').addEventListener('click', () => openModal('modal-add-section'));
+    document.getElementById('btn-preview').addEventListener('click', showFullPreview);
+    document.getElementById('btn-export').addEventListener('click', exportHTML);
+    document.getElementById('btn-save').addEventListener('click', saveDraft);
+    document.getElementById('btn-load').addEventListener('click', loadDraft);
+    document.getElementById('btn-music').addEventListener('click', openMusicModal);
+    document.getElementById('btn-save-section').addEventListener('click', saveCurrentSection);
+
+    document.querySelectorAll('.section-type-card').forEach(card => {
+        card.addEventListener('click', function() { addSection(this.dataset.type); });
+    });
+
+    // Load saved draft
+    const saved = localStorage.getItem('wedding-invitation-draft');
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved);
+            if (parsed.sections) { sections = parsed.sections; musicSettings = parsed.musicSettings || musicSettings; }
+            else { sections = parsed; }
+        } catch(e) {}
+    }
+
+    renderAll();
+    updateMusicButton();
+});

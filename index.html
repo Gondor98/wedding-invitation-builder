@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Invitation Builder</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Top Toolbar -->
+        <header class="toolbar">
+            <div class="toolbar-left">
+                <h1 class="app-title">&#128146; Wedding Invitation Builder</h1>
+            </div>
+            <div class="toolbar-center">
+                <button id="btn-add-section" class="toolbar-btn" title="Add Section">
+                    <span class="icon">+</span> Add Section
+                </button>
+                <button id="btn-preview" class="toolbar-btn" title="Full Preview">
+                    &#128065; Full Preview
+                </button>
+                <button id="btn-export" class="toolbar-btn btn-primary" title="Export HTML">
+                    &#11015; Export HTML
+                </button>
+            </div>
+            <div class="toolbar-right">
+                <button id="btn-music" class="toolbar-btn" title="Background Music">&#127925; Music</button>
+                <button id="btn-save" class="toolbar-btn" title="Save Draft">&#128190; Save</button>
+                <button id="btn-load" class="toolbar-btn" title="Load Draft">&#128194; Load</button>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Editor Panel -->
+            <aside class="editor-panel" id="editor-panel">
+                <div class="editor-header">
+                    <h2>Sections</h2>
+                    <small>Drag to reorder &bull; Click to edit</small>
+                </div>
+                <div class="sections-list" id="sections-list">
+                </div>
+            </aside>
+
+            <!-- Preview Panel -->
+            <main class="preview-panel" id="preview-panel">
+                <div class="preview-frame" id="preview-frame">
+                </div>
+            </main>
+        </div>
+
+        <!-- Add Section Modal -->
+        <div class="modal-overlay" id="modal-add-section" style="display:none;">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3>Add New Section</h3>
+                    <button class="modal-close" onclick="closeModal('modal-add-section')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="section-type-grid">
+                        <div class="section-type-card" data-type="hero">
+                            <div class="card-icon">&#128141;</div>
+                            <div class="card-title">Hero / Cover</div>
+                            <div class="card-desc">Couple names with decorative elements</div>
+                        </div>
+                        <div class="section-type-card" data-type="love-story">
+                            <div class="card-icon">&#128149;</div>
+                            <div class="card-title">Love Story</div>
+                            <div class="card-desc">Timeline of your relationship</div>
+                        </div>
+                        <div class="section-type-card" data-type="invitation">
+                            <div class="card-icon">&#128140;</div>
+                            <div class="card-title">Invitation Card</div>
+                            <div class="card-desc">Event details (groom/bride side)</div>
+                        </div>
+                        <div class="section-type-card" data-type="rsvp">
+                            <div class="card-icon">&#9989;</div>
+                            <div class="card-title">RSVP</div>
+                            <div class="card-desc">Guest confirmation + QR code</div>
+                        </div>
+                        <div class="section-type-card" data-type="thank-you">
+                            <div class="card-icon">&#128591;</div>
+                            <div class="card-title">Thank You</div>
+                            <div class="card-desc">Closing gratitude message</div>
+                        </div>
+                        <div class="section-type-card" data-type="gallery">
+                            <div class="card-icon">&#128444;</div>
+                            <div class="card-title">Photo Gallery</div>
+                            <div class="card-desc">Showcase your photos</div>
+                        </div>
+                        <div class="section-type-card" data-type="custom">
+                            <div class="card-icon">&#9999;</div>
+                            <div class="card-title">Custom Section</div>
+                            <div class="card-desc">Free-form content block</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Editor Modal -->
+        <div class="modal-overlay" id="modal-edit-section" style="display:none;">
+            <div class="modal modal-large">
+                <div class="modal-header">
+                    <h3 id="edit-modal-title">Edit Section</h3>
+                    <button class="modal-close" onclick="closeModal('modal-edit-section')">&times;</button>
+                </div>
+                <div class="modal-body" id="edit-modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal('modal-edit-section')">Cancel</button>
+                    <button class="btn btn-primary" id="btn-save-section">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Music Settings Modal -->
+        <div class="modal-overlay" id="modal-music" style="display:none;">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3>&#127925; Background Music</h3>
+                    <button class="modal-close" onclick="closeModal('modal-music')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p style="font-size:0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+                        Add background music that plays when guests open your invitation. 
+                        Modern browsers require guests to tap/click the page before audio plays.
+                    </p>
+                    <div class="form-group">
+                        <label>Music Source</label>
+                        <select id="music-source-type" onchange="toggleMusicSource()">
+                            <option value="file">Upload Audio File</option>
+                            <option value="url">External URL</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="music-file-group">
+                        <label>Upload Audio (MP3, OGG, WAV)</label>
+                        <div class="image-upload-area" id="music-upload-area">
+                            <div class="upload-icon">&#127926;</div>
+                            <div class="upload-text" id="music-upload-text">Click to upload audio file</div>
+                            <input type="file" accept="audio/*" id="music-file-input" onchange="handleMusicUpload(event)">
+                        </div>
+                    </div>
+                    <div class="form-group" id="music-url-group" style="display:none;">
+                        <label>Audio URL (direct link to mp3/ogg file)</label>
+                        <input type="text" id="music-url-input" placeholder="https://example.com/song.mp3">
+                    </div>
+                    <div class="form-group">
+                        <label>Options</label>
+                        <div style="display:flex; gap:16px; align-items:center; margin-top:4px;">
+                            <label style="font-size:0.85rem; display:flex; align-items:center; gap:6px; cursor:pointer;">
+                                <input type="checkbox" id="music-loop" checked> Loop
+                            </label>
+                            <label style="font-size:0.85rem; display:flex; align-items:center; gap:6px; cursor:pointer;">
+                                <input type="checkbox" id="music-autoplay" checked> Auto-play on open
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group" id="music-preview-group" style="display:none;">
+                        <label>Preview</label>
+                        <audio id="music-preview" controls style="width:100%;"></audio>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="removeMusicSetting()">Remove Music</button>
+                    <button class="btn btn-primary" onclick="saveMusicSetting()">Save Music</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Full Preview Modal -->
+        <div class="modal-overlay" id="modal-full-preview" style="display:none;">
+            <div class="modal modal-fullscreen">
+                <div class="modal-header">
+                    <h3>Full Preview</h3>
+                    <button class="modal-close" onclick="closeModal('modal-full-preview')">&times;</button>
+                </div>
+                <div class="modal-body modal-body-preview" id="full-preview-body">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
