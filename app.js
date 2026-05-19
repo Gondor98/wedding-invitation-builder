@@ -1045,16 +1045,25 @@ function getExportStyles() {
         @keyframes pulse { 0%, 100% { box-shadow: 0 4px 16px rgba(0,0,0,0.2); } 50% { box-shadow: 0 4px 24px rgba(201,168,76,0.5); } }
         /* Decorations */
         .inv-section { position: relative; overflow: hidden; }
-        .inv-formal-invite::before, .inv-invitation::before, .inv-gallery::before, .inv-thank-you::before { content: ''; position: absolute; top: 16px; left: 16px; right: 16px; bottom: 16px; border: 1px solid var(--gold); opacity: 0.15; border-radius: 4px; pointer-events: none; }
-        .inv-love-story { background: var(--bg-cream); background-image: radial-gradient(ellipse at 0% 0%, color-mix(in srgb, var(--gold) 5%, transparent) 0%, transparent 50%), radial-gradient(ellipse at 100% 100%, color-mix(in srgb, var(--gold) 5%, transparent) 0%, transparent 50%); }
-        .inv-gallery { background: linear-gradient(180deg, white 0%, var(--bg-cream) 100%); }
-        .inv-formal-invite { background: white; background-image: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--primary) 3%, white) 0%, white 70%); }
-        .inv-invitation { background: linear-gradient(180deg, var(--bg-cream) 0%, white 30%, white 70%, var(--bg-cream) 100%); }
-        .inv-thank-you { background: var(--bg-cream); background-image: radial-gradient(ellipse at 50% 100%, color-mix(in srgb, var(--gold) 6%, transparent) 0%, transparent 60%); }
-        .inv-rsvp { background: var(--primary-dark); background-image: radial-gradient(ellipse at 20% 50%, color-mix(in srgb, var(--primary) 30%, transparent) 0%, transparent 50%), radial-gradient(ellipse at 80% 50%, color-mix(in srgb, var(--gold) 8%, transparent) 0%, transparent 50%); }
-        [data-theme="luxurious-blue"] .inv-love-story { background-image: radial-gradient(ellipse at 0% 0%, rgba(26,58,107,0.04) 0%, transparent 50%), radial-gradient(ellipse at 100% 100%, rgba(184,150,90,0.05) 0%, transparent 50%); }
-        [data-theme="spanish-garden"] .inv-love-story { background-image: radial-gradient(ellipse at 0% 0%, rgba(107,76,42,0.04) 0%, transparent 50%), radial-gradient(ellipse at 100% 100%, rgba(74,107,58,0.05) 0%, transparent 50%); }
-        [data-theme="spanish-garden"] .inv-card { background: linear-gradient(135deg, #fefcf8 0%, #f8f0e4 100%); border-color: rgba(107,76,42,0.12); }
+        .inv-formal-invite, .inv-invitation, .inv-gallery, .inv-thank-you, .inv-love-story, .inv-custom { position: relative; overflow: hidden; }
+        .inv-formal-invite::before, .inv-formal-invite::after, .inv-invitation::before, .inv-invitation::after, .inv-gallery::before, .inv-gallery::after, .inv-thank-you::before, .inv-thank-you::after { content: ''; position: absolute; width: 120px; height: 120px; pointer-events: none; opacity: 0.2; background-size: contain; background-repeat: no-repeat; }
+        .inv-formal-invite::before, .inv-invitation::before, .inv-gallery::before, .inv-thank-you::before { top: 8px; left: 8px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M5,50 Q5,20 25,10 Q45,0 50,20 Q55,0 75,10 Q95,20 95,50' fill='none' stroke='%23c9a84c' stroke-width='1.5'/%3E%3Cpath d='M15,45 Q20,25 40,20 Q50,15 50,30' fill='none' stroke='%23c9a84c' stroke-width='1'/%3E%3Ccircle cx='50' cy='12' r='3' fill='%23c9a84c' fill-opacity='0.5'/%3E%3C/svg%3E"); }
+        .inv-formal-invite::after, .inv-invitation::after, .inv-gallery::after, .inv-thank-you::after { bottom: 8px; right: 8px; transform: rotate(180deg); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M5,50 Q5,20 25,10 Q45,0 50,20 Q55,0 75,10 Q95,20 95,50' fill='none' stroke='%23c9a84c' stroke-width='1.5'/%3E%3Cpath d='M15,45 Q20,25 40,20 Q50,15 50,30' fill='none' stroke='%23c9a84c' stroke-width='1'/%3E%3Ccircle cx='50' cy='12' r='3' fill='%23c9a84c' fill-opacity='0.5'/%3E%3C/svg%3E"); }
+        .inv-love-story { background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 6%, var(--bg-cream)) 0%, var(--bg-cream) 40%, color-mix(in srgb, var(--gold) 8%, var(--bg-cream)) 100%); }
+        .inv-formal-invite { background: linear-gradient(180deg, color-mix(in srgb, var(--primary) 5%, white) 0%, white 15%, white 85%, color-mix(in srgb, var(--gold) 6%, white) 100%); border-top: 3px solid var(--gold); }
+        .inv-invitation { background: linear-gradient(180deg, color-mix(in srgb, var(--gold) 6%, white) 0%, white 20%, color-mix(in srgb, var(--primary) 3%, white) 50%, white 80%, color-mix(in srgb, var(--gold) 6%, white) 100%); }
+        .inv-gallery { background: linear-gradient(180deg, color-mix(in srgb, var(--primary) 5%, var(--bg-cream)) 0%, var(--bg-cream) 50%, color-mix(in srgb, var(--gold) 5%, var(--bg-cream)) 100%); }
+        .inv-thank-you { background: radial-gradient(ellipse at 50% 50%, color-mix(in srgb, var(--gold) 10%, transparent) 0%, transparent 70%), linear-gradient(180deg, var(--bg-cream) 0%, color-mix(in srgb, var(--gold) 5%, var(--bg-cream)) 100%); border-bottom: 3px solid var(--gold); }
+        .inv-rsvp { background: var(--primary-dark); background-image: radial-gradient(ellipse at 10% 20%, color-mix(in srgb, var(--primary) 40%, transparent) 0%, transparent 40%), radial-gradient(ellipse at 90% 80%, color-mix(in srgb, var(--gold) 12%, transparent) 0%, transparent 40%), radial-gradient(ellipse at 50% 100%, color-mix(in srgb, var(--primary-light) 15%, transparent) 0%, transparent 50%); }
+        .inv-love-story .inv-section-title::after, .inv-invitation .inv-invitation-subtitle::after, .inv-gallery .inv-section-title::after, .inv-thank-you .inv-section-title::after { content: '\\2022  \\2726  \\2022'; display: block; margin-top: 16px; font-size: 1rem; letter-spacing: 8px; color: var(--gold); opacity: 0.6; }
+        [data-theme="luxurious-blue"] .inv-love-story { background: linear-gradient(135deg, rgba(26,58,107,0.06) 0%, #f5f7fa 40%, rgba(184,150,90,0.06) 100%); }
+        [data-theme="luxurious-blue"] .inv-card { background: linear-gradient(135deg, #f8fafd 0%, #eef3f9 100%); border-color: rgba(26,58,107,0.12); }
+        [data-theme="luxurious-blue"] .inv-rsvp { background: #0d1f3d; background-image: radial-gradient(ellipse at 10% 20%, rgba(26,58,107,0.5) 0%, transparent 40%), radial-gradient(ellipse at 90% 80%, rgba(184,150,90,0.12) 0%, transparent 40%); }
+        [data-theme="spanish-garden"] .inv-love-story { background: linear-gradient(135deg, rgba(107,76,42,0.06) 0%, #fdf6ee 40%, rgba(74,107,58,0.06) 100%); }
+        [data-theme="spanish-garden"] .inv-card { background: linear-gradient(135deg, #fefcf8 0%, #f8f0e4 100%); border-color: rgba(107,76,42,0.15); }
+        [data-theme="spanish-garden"] .inv-formal-invite { border-top-color: #c4883c; }
+        [data-theme="spanish-garden"] .inv-thank-you { border-bottom-color: #c4883c; }
+        [data-theme="spanish-garden"] .inv-rsvp { background: #3d2a14; background-image: radial-gradient(ellipse at 10% 20%, rgba(107,76,42,0.5) 0%, transparent 40%), radial-gradient(ellipse at 90% 80%, rgba(196,136,60,0.15) 0%, transparent 40%); }
     `;
 }
 

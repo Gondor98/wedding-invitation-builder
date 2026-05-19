@@ -1235,40 +1235,7 @@ html, body {
 
 /* ===== SECTION DECORATIONS ===== */
 
-/* Subtle pattern overlay for sections */
-.inv-section::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    pointer-events: none;
-    opacity: 0.03;
-    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5 L35 15 L30 25 L25 15Z' fill='%23000' fill-opacity='0.4'/%3E%3C/svg%3E");
-    background-size: 60px 60px;
-}
-
-.inv-hero::after,
-.inv-rsvp::after {
-    display: none;
-}
-
-/* Ornamental corner flourishes on light sections */
-.inv-formal-invite::before,
-.inv-invitation::before,
-.inv-gallery::before,
-.inv-thank-you::before {
-    content: '';
-    position: absolute;
-    top: 16px;
-    left: 16px;
-    right: 16px;
-    bottom: 16px;
-    border: 1px solid var(--gold);
-    opacity: 0.15;
-    border-radius: 4px;
-    pointer-events: none;
-}
-
-/* Corner ornaments */
+/* All middle sections setup */
 .inv-formal-invite,
 .inv-invitation,
 .inv-gallery,
@@ -1279,124 +1246,239 @@ html, body {
     overflow: hidden;
 }
 
-/* Top-left and bottom-right decorative corners */
-.inv-formal-invite .inv-formal-heading::before,
-.inv-invitation .inv-invitation-intro::before,
-.inv-thank-you .inv-section-label::before {
-    content: '❧';
-    display: block;
-    font-size: 1.5rem;
-    color: var(--gold);
-    opacity: 0.5;
-    margin-bottom: 8px;
-}
-
-/* Decorative separator between sections */
-.inv-section + .inv-section::before {
+/* ---- Floral corner ornaments (all 4 corners) ---- */
+.inv-formal-invite::before,
+.inv-formal-invite::after,
+.inv-invitation::before,
+.inv-invitation::after,
+.inv-gallery::before,
+.inv-gallery::after,
+.inv-thank-you::before,
+.inv-thank-you::after {
     content: '';
-    display: block;
-    width: 60px;
-    height: 2px;
-    background: linear-gradient(to right, transparent, var(--gold), transparent);
-    margin: 0 auto;
     position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 2;
+    width: 120px;
+    height: 120px;
+    pointer-events: none;
+    opacity: 0.2;
+    background-size: contain;
+    background-repeat: no-repeat;
 }
 
-/* Love Story section decoration */
+.inv-formal-invite::before,
+.inv-invitation::before,
+.inv-gallery::before,
+.inv-thank-you::before {
+    top: 8px;
+    left: 8px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M5,50 Q5,20 25,10 Q45,0 50,20 Q55,0 75,10 Q95,20 95,50' fill='none' stroke='%23c9a84c' stroke-width='1.5'/%3E%3Cpath d='M15,45 Q20,25 40,20 Q50,15 50,30' fill='none' stroke='%23c9a84c' stroke-width='1'/%3E%3Ccircle cx='50' cy='12' r='3' fill='%23c9a84c' fill-opacity='0.5'/%3E%3Cpath d='M5,50 Q10,60 20,55 Q30,50 25,40' fill='none' stroke='%23c9a84c' stroke-width='1'/%3E%3Cpath d='M10,70 Q5,55 15,50' fill='none' stroke='%23c9a84c' stroke-width='0.8'/%3E%3C/svg%3E");
+}
+
+.inv-formal-invite::after,
+.inv-invitation::after,
+.inv-gallery::after,
+.inv-thank-you::after {
+    bottom: 8px;
+    right: 8px;
+    transform: rotate(180deg);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M5,50 Q5,20 25,10 Q45,0 50,20 Q55,0 75,10 Q95,20 95,50' fill='none' stroke='%23c9a84c' stroke-width='1.5'/%3E%3Cpath d='M15,45 Q20,25 40,20 Q50,15 50,30' fill='none' stroke='%23c9a84c' stroke-width='1'/%3E%3Ccircle cx='50' cy='12' r='3' fill='%23c9a84c' fill-opacity='0.5'/%3E%3Cpath d='M5,50 Q10,60 20,55 Q30,50 25,40' fill='none' stroke='%23c9a84c' stroke-width='1'/%3E%3Cpath d='M10,70 Q5,55 15,50' fill='none' stroke='%23c9a84c' stroke-width='0.8'/%3E%3C/svg%3E");
+}
+
+/* ---- Love Story: tinted background + side vine decorations ---- */
 .inv-love-story {
-    background: var(--bg-cream);
-    background-image: 
-        radial-gradient(ellipse at 0% 0%, color-mix(in srgb, var(--gold) 5%, transparent) 0%, transparent 50%),
-        radial-gradient(ellipse at 100% 100%, color-mix(in srgb, var(--gold) 5%, transparent) 0%, transparent 50%);
+    background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--primary) 6%, var(--bg-cream)) 0%, 
+        var(--bg-cream) 40%, 
+        color-mix(in srgb, var(--gold) 8%, var(--bg-cream)) 100%);
 }
 
-/* Gallery section with subtle background */
-.inv-gallery {
-    background: linear-gradient(180deg, white 0%, var(--bg-cream) 100%);
+.inv-love-story::before,
+.inv-love-story::after {
+    content: '';
+    position: absolute;
+    width: 60px;
+    top: 60px;
+    bottom: 60px;
+    pointer-events: none;
+    opacity: 0.12;
+    background-repeat: repeat-y;
+    background-size: 60px auto;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 200'%3E%3Cpath d='M30,0 Q45,30 30,50 Q15,70 30,100 Q45,130 30,150 Q15,170 30,200' fill='none' stroke='%23c9a84c' stroke-width='1.5'/%3E%3Ccircle cx='30' cy='50' r='4' fill='%23c9a84c' fill-opacity='0.4'/%3E%3Ccircle cx='30' cy='100' r='3' fill='%23c9a84c' fill-opacity='0.3'/%3E%3Ccircle cx='30' cy='150' r='4' fill='%23c9a84c' fill-opacity='0.4'/%3E%3Cpath d='M30,50 Q40,45 45,50 Q40,55 30,50' fill='%23c9a84c' fill-opacity='0.2'/%3E%3Cpath d='M30,100 Q20,95 15,100 Q20,105 30,100' fill='%23c9a84c' fill-opacity='0.2'/%3E%3Cpath d='M30,150 Q40,145 45,150 Q40,155 30,150' fill='%23c9a84c' fill-opacity='0.2'/%3E%3C/svg%3E");
 }
 
-/* Formal invite subtle background */
+.inv-love-story::before { left: 0; }
+.inv-love-story::after { right: 0; }
+
+/* ---- Formal Invite: colored top border accent + frame ---- */
 .inv-formal-invite {
-    background: white;
-    background-image: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--primary) 3%, white) 0%, white 70%);
+    background: linear-gradient(180deg, 
+        color-mix(in srgb, var(--primary) 5%, white) 0%, 
+        white 15%, 
+        white 85%, 
+        color-mix(in srgb, var(--gold) 6%, white) 100%);
+    border-top: 3px solid var(--gold);
 }
 
-/* Invitation section gradient */
+/* ---- Invitation: alternating warm background ---- */
 .inv-invitation {
-    background: linear-gradient(180deg, var(--bg-cream) 0%, white 30%, white 70%, var(--bg-cream) 100%);
+    background: linear-gradient(180deg, 
+        color-mix(in srgb, var(--gold) 6%, white) 0%, 
+        white 20%, 
+        color-mix(in srgb, var(--primary) 3%, white) 50%,
+        white 80%, 
+        color-mix(in srgb, var(--gold) 6%, white) 100%);
 }
 
-/* Thank you section */
+/* ---- Gallery: colored background with pattern ---- */
+.inv-gallery {
+    background: linear-gradient(180deg, 
+        color-mix(in srgb, var(--primary) 5%, var(--bg-cream)) 0%, 
+        var(--bg-cream) 50%,
+        color-mix(in srgb, var(--gold) 5%, var(--bg-cream)) 100%);
+}
+
+/* ---- Thank You: warm glow ---- */
 .inv-thank-you {
-    background: var(--bg-cream);
-    background-image: radial-gradient(ellipse at 50% 100%, color-mix(in srgb, var(--gold) 6%, transparent) 0%, transparent 60%);
+    background: 
+        radial-gradient(ellipse at 50% 50%, color-mix(in srgb, var(--gold) 10%, transparent) 0%, transparent 70%),
+        linear-gradient(180deg, var(--bg-cream) 0%, color-mix(in srgb, var(--gold) 5%, var(--bg-cream)) 100%);
+    border-bottom: 3px solid var(--gold);
 }
 
-/* Custom section */
+/* ---- Custom section ---- */
 .inv-custom {
-    background: linear-gradient(180deg, white 0%, var(--bg-cream) 100%);
+    background: linear-gradient(180deg, white 0%, color-mix(in srgb, var(--primary) 4%, var(--bg-cream)) 100%);
 }
 
-/* RSVP enhanced styling */
+/* ---- RSVP: rich dark with glows ---- */
 .inv-rsvp {
     background: var(--primary-dark);
     background-image: 
-        radial-gradient(ellipse at 20% 50%, color-mix(in srgb, var(--primary) 30%, transparent) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 50%, color-mix(in srgb, var(--gold) 8%, transparent) 0%, transparent 50%);
+        radial-gradient(ellipse at 10% 20%, color-mix(in srgb, var(--primary) 40%, transparent) 0%, transparent 40%),
+        radial-gradient(ellipse at 90% 80%, color-mix(in srgb, var(--gold) 12%, transparent) 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 100%, color-mix(in srgb, var(--primary-light) 15%, transparent) 0%, transparent 50%);
 }
 
-/* ===== THEME-SPECIFIC DECORATIONS ===== */
+/* ---- Decorative dividers between sections ---- */
+.inv-love-story .inv-section-title::after,
+.inv-invitation .inv-invitation-subtitle::after,
+.inv-gallery .inv-section-title::after,
+.inv-thank-you .inv-section-title::after {
+    content: '\2022  \2726  \2022';
+    display: block;
+    margin-top: 16px;
+    font-size: 1rem;
+    letter-spacing: 8px;
+    color: var(--gold);
+    opacity: 0.6;
+}
 
-/* Luxurious Blue specific */
+/* ---- Floral accent above Thank You title ---- */
+.inv-thank-you .inv-section-label {
+    font-size: 1.2rem;
+    opacity: 0.7;
+}
+
+/* ============ THEME-SPECIFIC ENHANCEMENTS ============ */
+
+/* --- Luxurious Blue --- */
 [data-theme="luxurious-blue"] .inv-love-story {
-    background: var(--bg-cream);
-    background-image: 
-        radial-gradient(ellipse at 0% 0%, rgba(26,58,107,0.04) 0%, transparent 50%),
-        radial-gradient(ellipse at 100% 100%, rgba(184,150,90,0.05) 0%, transparent 50%);
+    background: linear-gradient(135deg, 
+        rgba(26,58,107,0.06) 0%, 
+        #f5f7fa 40%, 
+        rgba(184,150,90,0.06) 100%);
 }
 
 [data-theme="luxurious-blue"] .inv-formal-invite {
-    background-image: radial-gradient(ellipse at 50% 0%, rgba(26,58,107,0.03) 0%, white 70%);
+    background: linear-gradient(180deg, rgba(26,58,107,0.05) 0%, white 15%, white 85%, rgba(184,150,90,0.05) 100%);
+    border-top-color: var(--gold);
+}
+
+[data-theme="luxurious-blue"] .inv-invitation {
+    background: linear-gradient(180deg, rgba(184,150,90,0.06) 0%, white 20%, rgba(26,58,107,0.03) 50%, white 80%, rgba(184,150,90,0.06) 100%);
+}
+
+[data-theme="luxurious-blue"] .inv-gallery {
+    background: linear-gradient(180deg, rgba(26,58,107,0.05) 0%, #f5f7fa 50%, rgba(184,150,90,0.04) 100%);
+}
+
+[data-theme="luxurious-blue"] .inv-thank-you {
+    background: radial-gradient(ellipse at 50% 50%, rgba(184,150,90,0.1) 0%, transparent 70%), linear-gradient(180deg, #f5f7fa 0%, rgba(184,150,90,0.06) 100%);
 }
 
 [data-theme="luxurious-blue"] .inv-rsvp {
-    background: var(--primary-dark);
+    background: #0d1f3d;
     background-image: 
-        radial-gradient(ellipse at 20% 50%, rgba(26,58,107,0.4) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 80%, rgba(184,150,90,0.08) 0%, transparent 40%);
+        radial-gradient(ellipse at 10% 20%, rgba(26,58,107,0.5) 0%, transparent 40%),
+        radial-gradient(ellipse at 90% 80%, rgba(184,150,90,0.12) 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 100%, rgba(45,90,158,0.2) 0%, transparent 50%);
 }
 
-/* Spanish Garden specific */
+[data-theme="luxurious-blue"] .inv-card {
+    background: linear-gradient(135deg, #f8fafd 0%, #eef3f9 100%);
+    border-color: rgba(26,58,107,0.12);
+}
+
+/* --- Spanish Garden --- */
 [data-theme="spanish-garden"] .inv-love-story {
-    background: var(--bg-cream);
-    background-image: 
-        radial-gradient(ellipse at 0% 0%, rgba(107,76,42,0.04) 0%, transparent 50%),
-        radial-gradient(ellipse at 100% 100%, rgba(74,107,58,0.05) 0%, transparent 50%);
+    background: linear-gradient(135deg, 
+        rgba(107,76,42,0.06) 0%, 
+        #fdf6ee 40%, 
+        rgba(74,107,58,0.06) 100%);
 }
 
 [data-theme="spanish-garden"] .inv-formal-invite {
-    background-image: radial-gradient(ellipse at 50% 0%, rgba(107,76,42,0.03) 0%, white 70%);
+    background: linear-gradient(180deg, rgba(107,76,42,0.05) 0%, white 15%, white 85%, rgba(196,136,60,0.06) 100%);
+    border-top-color: #c4883c;
+}
+
+[data-theme="spanish-garden"] .inv-invitation {
+    background: linear-gradient(180deg, rgba(196,136,60,0.06) 0%, white 20%, rgba(74,107,58,0.03) 50%, white 80%, rgba(196,136,60,0.06) 100%);
+}
+
+[data-theme="spanish-garden"] .inv-gallery {
+    background: linear-gradient(180deg, rgba(74,107,58,0.05) 0%, #fdf6ee 50%, rgba(196,136,60,0.05) 100%);
+}
+
+[data-theme="spanish-garden"] .inv-thank-you {
+    background: radial-gradient(ellipse at 50% 50%, rgba(196,136,60,0.12) 0%, transparent 70%), linear-gradient(180deg, #fdf6ee 0%, rgba(196,136,60,0.07) 100%);
+    border-bottom-color: #c4883c;
 }
 
 [data-theme="spanish-garden"] .inv-rsvp {
-    background: var(--primary-dark);
+    background: #3d2a14;
     background-image: 
-        radial-gradient(ellipse at 20% 50%, rgba(107,76,42,0.4) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 80%, rgba(196,136,60,0.1) 0%, transparent 40%);
+        radial-gradient(ellipse at 10% 20%, rgba(107,76,42,0.5) 0%, transparent 40%),
+        radial-gradient(ellipse at 90% 80%, rgba(196,136,60,0.15) 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 100%, rgba(74,107,58,0.15) 0%, transparent 50%);
 }
 
 [data-theme="spanish-garden"] .inv-card {
     background: linear-gradient(135deg, #fefcf8 0%, #f8f0e4 100%);
-    border-color: rgba(107,76,42,0.12);
+    border-color: rgba(107,76,42,0.15);
 }
 
-[data-theme="spanish-garden"] .inv-thank-you {
-    background: var(--bg-cream);
-    background-image: radial-gradient(ellipse at 50% 100%, rgba(196,136,60,0.08) 0%, transparent 60%);
+/* Spanish Garden uses warm-toned ornament SVGs */
+[data-theme="spanish-garden"] .inv-formal-invite::before,
+[data-theme="spanish-garden"] .inv-invitation::before,
+[data-theme="spanish-garden"] .inv-gallery::before,
+[data-theme="spanish-garden"] .inv-thank-you::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M5,50 Q5,20 25,10 Q45,0 50,20 Q55,0 75,10 Q95,20 95,50' fill='none' stroke='%23c4883c' stroke-width='1.5'/%3E%3Cpath d='M15,45 Q20,25 40,20 Q50,15 50,30' fill='none' stroke='%23c4883c' stroke-width='1'/%3E%3Ccircle cx='50' cy='12' r='3' fill='%23c4883c' fill-opacity='0.5'/%3E%3Cpath d='M5,50 Q10,60 20,55 Q30,50 25,40' fill='none' stroke='%234a6b3a' stroke-width='1'/%3E%3Cpath d='M10,70 Q5,55 15,50' fill='none' stroke='%234a6b3a' stroke-width='0.8'/%3E%3C/svg%3E");
+    opacity: 0.25;
+}
+
+[data-theme="spanish-garden"] .inv-formal-invite::after,
+[data-theme="spanish-garden"] .inv-invitation::after,
+[data-theme="spanish-garden"] .inv-gallery::after,
+[data-theme="spanish-garden"] .inv-thank-you::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M5,50 Q5,20 25,10 Q45,0 50,20 Q55,0 75,10 Q95,20 95,50' fill='none' stroke='%23c4883c' stroke-width='1.5'/%3E%3Cpath d='M15,45 Q20,25 40,20 Q50,15 50,30' fill='none' stroke='%23c4883c' stroke-width='1'/%3E%3Ccircle cx='50' cy='12' r='3' fill='%23c4883c' fill-opacity='0.5'/%3E%3Cpath d='M5,50 Q10,60 20,55 Q30,50 25,40' fill='none' stroke='%234a6b3a' stroke-width='1'/%3E%3Cpath d='M10,70 Q5,55 15,50' fill='none' stroke='%234a6b3a' stroke-width='0.8'/%3E%3C/svg%3E");
+    opacity: 0.25;
+}
+
+[data-theme="spanish-garden"] .inv-love-story::before,
+[data-theme="spanish-garden"] .inv-love-story::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 200'%3E%3Cpath d='M30,0 Q45,30 30,50 Q15,70 30,100 Q45,130 30,150 Q15,170 30,200' fill='none' stroke='%234a6b3a' stroke-width='1.5'/%3E%3Ccircle cx='30' cy='50' r='4' fill='%23c4883c' fill-opacity='0.4'/%3E%3Ccircle cx='30' cy='100' r='3' fill='%234a6b3a' fill-opacity='0.3'/%3E%3Ccircle cx='30' cy='150' r='4' fill='%23c4883c' fill-opacity='0.4'/%3E%3Cpath d='M30,50 Q40,45 45,50 Q40,55 30,50' fill='%234a6b3a' fill-opacity='0.25'/%3E%3Cpath d='M30,100 Q20,95 15,100 Q20,105 30,100' fill='%234a6b3a' fill-opacity='0.25'/%3E%3Cpath d='M30,150 Q40,145 45,150 Q40,155 30,150' fill='%234a6b3a' fill-opacity='0.25'/%3E%3C/svg%3E");
+    opacity: 0.18;
 }
 
 /* ===== SAVE/LOAD MODALS ===== */
