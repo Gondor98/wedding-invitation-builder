@@ -2130,3 +2130,20 @@ html, body {
     background: #c4748e;
     border-color: #e8a0b8;
 }
+
+/* ===== MAP FALLBACK LINK ===== */
+.inv-card-map-link {
+    display: block;
+    text-align: center;
+    padding: 10px;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: var(--primary);
+    text-decoration: none;
+    background: var(--bg-cream);
+    border-top: 1px solid var(--border);
+}
+
+.inv-card-map-link:hover {
+    text-decoration: underline;
+}

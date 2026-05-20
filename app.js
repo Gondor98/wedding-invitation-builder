@@ -259,7 +259,12 @@ function renderInvitationPreview(data) {
     const cards = (data.cards || []).map(card => {
         let mapHtml = '';
         if (card.mapEmbed && card.mapEmbed.trim()) {
-            mapHtml = `<div class="inv-card-map">${card.mapEmbed}</div>`;
+            // Extract the src URL from iframe for fallback link
+            let mapSrc = '';
+            const srcMatch = card.mapEmbed.match(/src=["']([^"']+)["']/);
+            if (srcMatch) mapSrc = srcMatch[1];
+            const fallbackLink = mapSrc ? `<a href="${mapSrc}" target="_blank" rel="noopener" class="inv-card-map-link">\u{1F4CD} Open in Google Maps</a>` : '';
+            mapHtml = `<div class="inv-card-map">${card.mapEmbed}${fallbackLink}</div>`;
         } else {
             mapHtml = `<div class="inv-card-map"><div class="inv-card-map-placeholder">\u{1F4CD} Google Map will appear here</div></div>`;
         }
@@ -856,8 +861,8 @@ function exportHTML() {
     let musicScript = '';
     if (musicSettings.enabled && musicSettings.source) {
         musicHtml = `
-    <audio id="bg-music" ${musicSettings.loop ? 'loop' : ''} preload="auto">
-        <source src="${musicSettings.source}" type="audio/mpeg">
+    <audio id="bg-music" ${musicSettings.loop ? 'loop' : ''} preload="auto" playsinline>
+        <source src="${musicSettings.source}">
     </audio>
     <button id="music-toggle" class="music-toggle" aria-label="Toggle Music">
         <svg id="music-icon-on" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
@@ -872,6 +877,7 @@ function exportHTML() {
             var iconOff = document.getElementById('music-icon-off');
             if (!audio || !toggleBtn) return;
             var musicPlaying = false;
+            
             function updateUI(playing) {
                 musicPlaying = playing;
                 if (playing) {
@@ -884,16 +890,59 @@ function exportHTML() {
                     toggleBtn.classList.remove('playing');
                 }
             }
+            
             function playMusic() {
+                audio.load();
                 var p = audio.play();
                 if (p && p.then) {
-                    p.then(function() { updateUI(true); }).catch(function(err) { console.log('Play blocked:', err); });
+                    p.then(function() { updateUI(true); }).catch(function(err) { 
+                        console.log('Play blocked:', err);
+                        updateUI(false);
+                    });
                 }
             }
+            
             function stopMusic() { audio.pause(); updateUI(false); }
-            function toggleMusic() { if (musicPlaying) { stopMusic(); } else { playMusic(); } }
-            toggleBtn.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); toggleMusic(); });
-            ${musicSettings.autoplay ? `var hasInteracted = false; function onFirstInteraction(e) { if (hasInteracted) return; if (e.target === toggleBtn || toggleBtn.contains(e.target)) return; hasInteracted = true; playMusic(); document.removeEventListener('click', onFirstInteraction, true); document.removeEventListener('touchstart', onFirstInteraction, true); document.removeEventListener('scroll', onFirstInteraction, true); } document.addEventListener('click', onFirstInteraction, true); document.addEventListener('touchstart', onFirstInteraction, true); document.addEventListener('scroll', onFirstInteraction, true);` : ''}
+            
+            function toggleMusic() { 
+                if (musicPlaying) { stopMusic(); } else { playMusic(); } 
+            }
+            
+            // Handle audio ending (if not loop)
+            audio.addEventListener('ended', function() { updateUI(false); });
+            audio.addEventListener('pause', function() { if (!audio.ended) updateUI(false); });
+            audio.addEventListener('play', function() { updateUI(true); });
+            
+            // Toggle button with debounce to prevent double-fire on mobile
+            var lastToggle = 0;
+            function handleToggle(e) {
+                e.preventDefault(); 
+                e.stopPropagation(); 
+                e.stopImmediatePropagation();
+                var now = Date.now();
+                if (now - lastToggle < 300) return;
+                lastToggle = now;
+                toggleMusic(); 
+            }
+            toggleBtn.addEventListener('click', handleToggle);
+            toggleBtn.addEventListener('touchend', handleToggle);
+            
+            ${musicSettings.autoplay ? `var hasInteracted = false; 
+            function onFirstInteraction(e) { 
+                if (hasInteracted) return; 
+                if (e.target === toggleBtn || toggleBtn.contains(e.target)) return; 
+                hasInteracted = true; 
+                playMusic(); 
+                removeListeners(); 
+            }
+            function removeListeners() {
+                document.removeEventListener('click', onFirstInteraction, true); 
+                document.removeEventListener('touchend', onFirstInteraction, true); 
+                document.removeEventListener('scroll', onFirstInteraction, true);
+            }
+            document.addEventListener('click', onFirstInteraction, true); 
+            document.addEventListener('touchend', onFirstInteraction, true); 
+            document.addEventListener('scroll', onFirstInteraction, true);` : ''}
         })();
     <\/script>`;
     }
@@ -1039,6 +1088,7 @@ function getExportStyles() {
         .inv-card-map { margin-top: 16px; border-radius: var(--radius); overflow: hidden; border: 1px solid rgba(26,92,58,0.1); }
         .inv-card-map iframe { width: 100%; height: 180px; border: none; display: block; }
         .inv-card-map-placeholder { width: 100%; height: 120px; background: var(--bg-cream); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: var(--text-muted); }
+        .inv-card-map-link { display: block; text-align: center; padding: 10px; font-family: var(--font-body); font-size: 0.8rem; color: var(--primary); text-decoration: none; background: var(--bg-cream); border-top: 1px solid var(--border); }
         .inv-rsvp { padding: 60px 24px; background: var(--primary-dark); color: white; text-align: center; }
         .inv-rsvp .inv-section-title { color: white; }
         .inv-rsvp-form { max-width: 320px; margin: 0 auto; }
