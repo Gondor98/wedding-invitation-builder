@@ -1027,6 +1027,98 @@ function exportHTML() {
     URL.revokeObjectURL(url);
 }
 
+// ===== PUBLISH TO GITHUB PAGES =====
+function publishInvitation() {
+    const previewHtml = sections.map(section => {
+        if (section.type === 'rsvp') return renderRSVPForExport(section.data);
+        return renderSectionPreview(section);
+    }).join('');
+
+    let musicHtml = '';
+    let musicScript = '';
+    if (musicSettings.enabled && musicSettings.source) {
+        musicHtml = `
+    <audio id="bg-music" ${musicSettings.loop ? 'loop' : ''} preload="auto" playsinline>
+        <source src="${musicSettings.source}">
+    </audio>
+    <button id="music-toggle" class="music-toggle" aria-label="Toggle Music">
+        <svg id="music-icon-on" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        <svg id="music-icon-off" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><line x1="1" y1="1" x2="23" y2="23" stroke="red" stroke-width="2"/></svg>
+    </button>`;
+        musicScript = `
+    <script>
+        (function() {
+            var audio = document.getElementById('bg-music');
+            var toggleBtn = document.getElementById('music-toggle');
+            var iconOn = document.getElementById('music-icon-on');
+            var iconOff = document.getElementById('music-icon-off');
+            if (!audio || !toggleBtn) return;
+            var musicPlaying = false;
+            function updateUI(playing) { musicPlaying = playing; if (playing) { iconOn.style.display='block'; iconOff.style.display='none'; toggleBtn.classList.add('playing'); } else { iconOn.style.display='none'; iconOff.style.display='block'; toggleBtn.classList.remove('playing'); } }
+            function playMusic() { audio.load(); var p = audio.play(); if (p && p.then) { p.then(function() { updateUI(true); }).catch(function() { updateUI(false); }); } }
+            function stopMusic() { audio.pause(); updateUI(false); }
+            function toggleMusic() { if (musicPlaying) stopMusic(); else playMusic(); }
+            audio.addEventListener('ended', function() { updateUI(false); });
+            audio.addEventListener('play', function() { updateUI(true); });
+            var lastToggle = 0;
+            function handleToggle(e) { e.preventDefault(); e.stopPropagation(); var now = Date.now(); if (now - lastToggle < 300) return; lastToggle = now; toggleMusic(); }
+            toggleBtn.addEventListener('click', handleToggle);
+            toggleBtn.addEventListener('touchend', handleToggle);
+            ${musicSettings.autoplay ? `var hasInteracted = false; function onFirstInteraction(e) { if (hasInteracted) return; if (e.target === toggleBtn || toggleBtn.contains(e.target)) return; hasInteracted = true; playMusic(); document.removeEventListener('click', onFirstInteraction, true); document.removeEventListener('touchend', onFirstInteraction, true); document.removeEventListener('scroll', onFirstInteraction, true); } document.addEventListener('click', onFirstInteraction, true); document.addEventListener('touchend', onFirstInteraction, true); document.addEventListener('scroll', onFirstInteraction, true);` : ''}
+        })();
+    <\/script>`;
+    }
+
+    const fullHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Invitation</title>
+    <meta property="og:title" content="Wedding Invitation - ${sections[0]?.data?.name1 || ''} & ${sections[0]?.data?.name2 || ''}">
+    <meta property="og:description" content="You are invited to our wedding celebration!">
+    <meta property="og:type" content="website">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&family=Dancing+Script:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>${getExportStyles()}</style>
+</head>
+<body>
+    ${musicHtml}
+    <div class="invitation-wrapper" data-theme="${currentTheme}">
+        ${previewHtml}
+    </div>
+    ${musicScript}
+    <script>
+        function submitRSVP(event) {
+            event.preventDefault();
+            var form = document.getElementById('rsvp-form');
+            var btn = form.querySelector('.inv-rsvp-btn');
+            var status = document.getElementById('rsvp-status');
+            var webhookUrl = document.getElementById('rsvp-webhook-url').value;
+            var thankMsg = document.getElementById('rsvp-thank-msg').value;
+            var payload = { name: document.getElementById('rsvp-name').value, attendance: document.getElementById('rsvp-attend').value, guests: document.getElementById('rsvp-guests').value, message: document.getElementById('rsvp-message').value };
+            btn.disabled = true; btn.textContent = '\u0110ang g\u1eedi...'; status.style.display = 'none';
+            if (!webhookUrl) { status.style.display='block'; status.style.color='#e8c48a'; status.textContent=thankMsg; btn.textContent='\u0110\u00e3 g\u1eedi \u2713'; form.reset(); return false; }
+            fetch(webhookUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).then(function() { status.style.display='block'; status.style.color='#e8c48a'; status.textContent=thankMsg; btn.textContent='\u0110\u00e3 g\u1eedi \u2713'; btn.style.background='#2d8f5e'; btn.style.color='white'; form.reset(); }).catch(function() { status.style.display='block'; status.style.color='#e8c48a'; status.textContent=thankMsg; btn.textContent='\u0110\u00e3 g\u1eedi \u2713'; form.reset(); });
+            return false;
+        }
+    <\/script>
+</body>
+</html>`;
+
+    // Save to local file for the wedding repo
+    const blob = new Blob([fullHtml], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'index.html';
+    a.click();
+    URL.revokeObjectURL(url);
+
+    // Show instructions
+    alert('\u2705 File saved as index.html!\n\nTo publish:\n1. Move this file to ~/wedding/ folder\n2. Run in terminal:\n   cd ~/wedding && cp ~/Downloads/index.html . && git add -A && git commit -m "Update invitation" && git push\n\n\u{1F517} Your live URL: https://gondor98.github.io/wedding/');
+}
+
+
 function getExportStyles() {
     return `
         :root { --primary: #1a3a6b; --primary-light: #2d5a9e; --primary-dark: #0d1f3d; --gold: #b8965a; --gold-light: #dfc692; --bg-cream: #f5f7fa; --text-dark: #2c2c2c; --text-muted: #6b6b6b; --border: #e0ddd8; --radius: 8px; --radius-lg: 16px; --font-display: 'Playfair Display', serif; --font-elegant: 'Cormorant Garamond', serif; --font-body: 'Montserrat', sans-serif; --font-script: 'Dancing Script', cursive; --hero-gradient: linear-gradient(135deg, #0d1f3d 0%, #1a3a6b 50%, #0d1f3d 100%); --ornament-color: rgba(184,150,90,0.4); }
@@ -1318,6 +1410,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('btn-add-section').addEventListener('click', () => openModal('modal-add-section'));
     document.getElementById('btn-preview').addEventListener('click', showFullPreview);
     document.getElementById('btn-export').addEventListener('click', exportHTML);
+    document.getElementById('btn-publish').addEventListener('click', publishInvitation);
     document.getElementById('btn-save').addEventListener('click', openSaveModal);
     document.getElementById('btn-load').addEventListener('click', openLoadModal);
     document.getElementById('btn-music').addEventListener('click', openMusicModal);
