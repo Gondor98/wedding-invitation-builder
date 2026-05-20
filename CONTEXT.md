@@ -1,37 +1,67 @@
 # Wedding Invitation Builder - Full Project Context
 
 ## Project Location
-- **Local:** `~/wedding-invitation-builder/`
-- **GitHub:** https://github.com/Gondor98/wedding-invitation-builder
-- **Live URL:** https://gondor98.github.io/wedding-invitation-builder/
+- **Builder Local:** `~/wedding-invitation-builder/`
+- **Builder GitHub:** https://github.com/Gondor98/wedding-invitation-builder
+- **Builder Live URL:** https://gondor98.github.io/wedding-invitation-builder/
 - **GitHub Account:** Gondor98
+
+## Published Wedding Invitation Sites
+| Site | GitHub Repo | Live URL | Local Folder |
+|------|-------------|----------|--------------|
+| Wedding 1 | https://github.com/Gondor98/wedding | https://gondor98.github.io/wedding/ | `~/wedding/` |
+| Wedding 2 | https://github.com/Gondor98/wedding-2 | https://gondor98.github.io/wedding-2/ | `~/wedding-2/` |
+
+### Publishing Workflow
+1. In the builder, select target site from dropdown (Site 1 or Site 2)
+2. Click **Publish** → downloads `index.html`
+3. Run in terminal: `~/wedding/publish.sh ~/Downloads/index.html` (or `~/wedding-2/publish.sh`)
+4. Live in ~30 seconds
 
 ## Tech Stack
 - Pure HTML/CSS/JS (no frameworks)
 - GitHub Pages hosting via Actions workflow (`.github/workflows/deploy.yml`)
 - Google Fonts: Playfair Display, Cormorant Garamond, Montserrat, Dancing Script
 - Google Sheets integration via Apps Script for RSVP
+- Canvas-based image compression on upload
 
 ## File Structure
-- `index.html` — Main app shell with modals (add section, edit section, music, save/load, full preview)
-- `styles.css` — All styling including theme variables, preview styles, editor UI, decorations (~38KB)
-- `app.js` — Full application logic (~78KB): data model, rendering, editing, export, drag-drop, music, themes, save/load
+- `index.html` — Main app shell with modals (add section, edit section, music, save/load, full preview, guest links)
+- `styles.css` — All styling including theme variables, preview styles, editor UI, decorations
+- `app.js` — Full application logic: data model, rendering, editing, export, drag-drop, music, themes, save/load, image compression, publish, guest links
 - `google-apps-script.js` — Google Apps Script code for RSVP → Google Sheets integration
 - `.github/workflows/deploy.yml` — Auto-deploy to GitHub Pages on push to main
 
 ## Features Implemented
 1. **Section types:** Hero, Formal Invite, Love Story (timeline), Invitation Card (with Google Maps embed), RSVP (with QR code), Thank You, Gallery, Custom
 2. **Section management:** Add, remove, reorder (drag-and-drop), edit via modals
-3. **Image uploads:** Cover photo, timeline photos, gallery photos, QR code (all as base64 data URLs)
-4. **Background music:** Upload audio file or external URL, loop/autoplay options, floating toggle button in export
-5. **Four themes:** "Luxurious Blue" (deep navy + champagne gold), "Spanish Garden" (bright garden greens + warm gold), "Eucalyptus" (botanical watercolor leaves, sage greens, light cream), and "Cherry Blossom" (pink sakura flowers, soft rose, romantic)
-6. **Named draft save/load:** Multiple drafts stored in localStorage with name, date, theme info
-7. **Export:** Downloads standalone HTML file with all styles, images, music, and functional RSVP form embedded
-8. **Google Sheets RSVP:** Form submits to GuestConfirm tab via Apps Script webhook
-9. **Vietnamese text:** RSVP form labels are in Vietnamese (all editable)
-10. **Decorations:** Floral SVG corner ornaments, vine side borders, colored gradients, ornamental star dividers, gold accent borders
-11. **Formal Invite section:** Guest name, groom/bride parents' names, family addresses, couple names with roles (from Vietnamese wedding format)
-12. **Google Maps embed:** Each invitation card has a field for Google Maps iframe embed code
+3. **Image uploads:** Cover photo, timeline photos, gallery photos, QR code (all as base64 data URLs, auto-compressed)
+4. **Image compression:** Automatic on upload — max 1200×1200px, JPEG quality 0.75, target max 5 MB per image. Progressive quality reduction if needed.
+5. **Background music:** Upload audio file or external URL, loop/autoplay options, floating toggle button in export. Mobile-compatible (touchend events, debounce, IIFE-wrapped).
+6. **Four themes:** "Luxurious Blue", "Spanish Garden", "Eucalyptus", "Cherry Blossom"
+7. **Named draft save/load:** Multiple drafts stored in localStorage with name, date, theme info. Music files >100KB excluded from drafts. Error handling for quota exceeded.
+8. **Export:** Downloads standalone HTML file with all styles, images, music, and functional RSVP form embedded
+9. **Publish:** Dedicated button + site selector to publish to GitHub Pages (wedding or wedding-2)
+10. **Personalized guest names:** URL parameter `?guest=Name` replaces guest name in Formal Invite section and pre-fills RSVP name field
+11. **Guest Link Generator:** Modal tool to batch-generate personalized invitation links for all guests
+12. **Google Sheets RSVP:** Form submits to GuestConfirm tab via Apps Script webhook
+13. **Vietnamese text:** RSVP form labels are in Vietnamese (all editable)
+14. **Decorations:** Floral SVG corner ornaments, vine side borders, colored gradients, ornamental star dividers, gold accent borders
+15. **Formal Invite section:** Guest name (personalizable via URL), groom/bride parents' names, family addresses, couple names with roles
+16. **Google Maps embed:** Each invitation card has iframe embed code + clickable fallback link for mobile
+
+## Personalized Guest Names (URL Parameters)
+- **How it works:** Exported HTML reads `?guest=` from the URL and replaces the guest name
+- **Example:** `https://gondor98.github.io/wedding/?guest=Gia+đình+bạn+Ngọc+Quyên`
+- **Features:**
+  - Replaces `.inv-formal-guest-name` text content
+  - Pre-fills `#rsvp-name` input field
+  - Uses `decodeURIComponent` for Vietnamese characters
+- **Guest Link Generator (🔗 Links button):**
+  - Enter names one per line
+  - Select base URL (wedding or wedding-2)
+  - Generates all personalized links
+  - Copy all to clipboard
 
 ## Google Sheets Integration
 - **Sheet:** https://docs.google.com/spreadsheets/d/1KFPGKPi2ebYJ58RWXNZchtrWyWPmlxbs1OepzGACsUo/edit
@@ -78,15 +108,39 @@
 - Names use Dancing Script, large pink "and" watermark
 - Romantic, soft sakura aesthetic
 
+## Image Compression
+- **Trigger:** Automatic on every image upload
+- **Max dimensions:** 1200 × 1200 px (maintains aspect ratio)
+- **Format:** Converted to JPEG
+- **Quality:** 0.75 initial, progressively reduced to 0.3 if still over limit
+- **Target max size:** 5 MB per image
+- **Last resort:** Dimensions reduced to 60% if quality reduction insufficient
+- **Loading state:** Shows "⏳ Compressing..." during processing
+- **Console logging:** Reports original vs compressed size
+
+## Music Player (Exported HTML)
+- IIFE-wrapped, no global scope pollution
+- `playsinline` attribute for iOS
+- `audio.load()` before `play()` for mobile
+- `touchend` events (not `touchstart`) for iOS compatibility
+- 300ms debounce prevents double-fire on mobile
+- Auto-play on first user interaction (click/touchend/scroll)
+- Toggle button skipped by autoplay handler (prevents start-then-stop race)
+- Proper Promise handling with `.catch()` for play failures
+- Audio event listeners (ended, pause, play) keep UI in sync
+
 ## Key Design Decisions
 - Reference format: https://prowedding.vn/thiepdientu/thiep-cuoi-dien-tu/mau-thiep-xanh-luxury/
 - Preview is mobile-width (480px max) in right panel
 - Editor panel is 360px left sidebar with draggable section cards
 - All data stored as JSON array of section objects with `{id, type, data}` structure
-- Images embedded as base64 in export (fully self-contained HTML)
+- Images embedded as base64 in export (fully self-contained HTML, auto-compressed)
 - Music auto-plays on first user interaction (modern browser requirement)
 - RSVP uses `mode: 'no-cors'` fetch to Google Apps Script
 - Theme selection stored in localStorage and embedded in exported HTML via `data-theme` attribute
+- Guest names personalized via URL parameters (no need for multiple deployments)
+- Google Maps fallback link provided for mobile/file:// protocol compatibility
+- localStorage save: music files stripped if >100KB, try/catch for quota errors
 
 ## Section Data Models
 
@@ -146,6 +200,14 @@
 - Any push to `main` auto-deploys via GitHub Actions
 - Workflow: checkout → configure-pages → upload-pages-artifact → deploy-pages
 - Takes ~30-35 seconds to deploy
+- **GitHub file size limit: 100 MB** (image compression prevents exceeding this)
+
+## Known Limitations & Workarounds
+- **localStorage limit (~5-10 MB):** Music files stripped from drafts; error shown if images exceed quota
+- **GitHub 100 MB file limit:** Image compressor keeps total manageable; avoid embedding raw high-res photos
+- **Mobile autoplay policy:** Music requires user gesture; handled via first-interaction listeners
+- **Google Maps in local files:** `file://` protocol blocks iframes; fallback link opens Maps directly
+- **Base64 overhead:** ~37% larger than binary; compression compensates
 
 ## Commit History Summary
 1. Initial commit: base builder with all sections
@@ -157,3 +219,13 @@
 7. Hardcoded webhook URL
 8. Bold decorations (floral corners, vine borders, gradients, dividers)
 9. Spanish Garden brightened (no brown, lush green)
+10. Eucalyptus theme (botanical watercolor leaves)
+11. Cherry Blossom theme (pink sakura flowers)
+12. Fix RSVP Save button (missing DOM elements)
+13. Fix music player for mobile (IIFE, touchend, debounce)
+14. Google Maps fallback link for mobile
+15. Publish button + site selector (wedding / wedding-2)
+16. Fix Save Draft (localStorage quota handling)
+17. Personalized guest names via URL parameters
+18. Guest Link Generator tool
+19. Automatic image compression on upload (max 5 MB/image)
