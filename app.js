@@ -643,7 +643,7 @@ function addGallerySlot() {
 const IMAGE_MAX_WIDTH = 1200;   // Max width in pixels
 const IMAGE_MAX_HEIGHT = 1200;  // Max height in pixels
 const IMAGE_QUALITY = 0.75;     // JPEG quality (0.0 - 1.0)
-const IMAGE_MAX_SIZE_KB = 800;  // Target max size per image in KB
+const IMAGE_MAX_SIZE_KB = 5120;  // Target max size per image in KB (5 MB)
 
 function compressImage(file, callback) {
     const reader = new FileReader();
