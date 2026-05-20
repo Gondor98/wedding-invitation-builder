@@ -523,17 +523,19 @@ function saveCurrentSection() {
             break;
         case 'rsvp':
             editingSection.data.title = document.getElementById('edit-rsvp-title').value;
-            editingSection.data.placeholderName = document.getElementById('edit-rsvp-pname').value;
-            editingSection.data.placeholderAttend = document.getElementById('edit-rsvp-pattend').value;
-            editingSection.data.optionYes = document.getElementById('edit-rsvp-oyes').value;
-            editingSection.data.optionNo = document.getElementById('edit-rsvp-ono').value;
-            editingSection.data.placeholderGuests = document.getElementById('edit-rsvp-pguests').value;
-            editingSection.data.placeholderMessage = document.getElementById('edit-rsvp-pmsg').value;
             editingSection.data.buttonText = document.getElementById('edit-rsvp-btn').value;
-            editingSection.data.thankYouMessage = document.getElementById('edit-rsvp-thanks').value;
-            editingSection.data.webhookUrl = document.getElementById('edit-rsvp-webhook').value;
             editingSection.data.qrLabel = document.getElementById('edit-rsvp-qr-label').value;
             editingSection.data.qrImage = document.getElementById('edit-rsvp-qr-image').value;
+            // Only update optional fields if their elements exist in the form
+            var el;
+            if ((el = document.getElementById('edit-rsvp-pname'))) editingSection.data.placeholderName = el.value;
+            if ((el = document.getElementById('edit-rsvp-pattend'))) editingSection.data.placeholderAttend = el.value;
+            if ((el = document.getElementById('edit-rsvp-oyes'))) editingSection.data.optionYes = el.value;
+            if ((el = document.getElementById('edit-rsvp-ono'))) editingSection.data.optionNo = el.value;
+            if ((el = document.getElementById('edit-rsvp-pguests'))) editingSection.data.placeholderGuests = el.value;
+            if ((el = document.getElementById('edit-rsvp-pmsg'))) editingSection.data.placeholderMessage = el.value;
+            if ((el = document.getElementById('edit-rsvp-thanks'))) editingSection.data.thankYouMessage = el.value;
+            if ((el = document.getElementById('edit-rsvp-webhook'))) editingSection.data.webhookUrl = el.value;
             break;
         case 'thank-you':
             editingSection.data.title = document.getElementById('edit-thanks-title').value;
