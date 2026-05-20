@@ -639,23 +639,84 @@ function addGallerySlot() {
 }
 
 // ===== IMAGE HANDLING =====
+// Image compression settings
+const IMAGE_MAX_WIDTH = 1200;   // Max width in pixels
+const IMAGE_MAX_HEIGHT = 1200;  // Max height in pixels
+const IMAGE_QUALITY = 0.75;     // JPEG quality (0.0 - 1.0)
+const IMAGE_MAX_SIZE_KB = 800;  // Target max size per image in KB
+
+function compressImage(file, callback) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+            // Calculate new dimensions (maintain aspect ratio)
+            let width = img.width;
+            let height = img.height;
+            
+            if (width > IMAGE_MAX_WIDTH || height > IMAGE_MAX_HEIGHT) {
+                const ratio = Math.min(IMAGE_MAX_WIDTH / width, IMAGE_MAX_HEIGHT / height);
+                width = Math.round(width * ratio);
+                height = Math.round(height * ratio);
+            }
+            
+            // Draw to canvas with new dimensions
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Try progressively lower quality until under size limit
+            let quality = IMAGE_QUALITY;
+            let dataUrl = canvas.toDataURL('image/jpeg', quality);
+            
+            // If still too large, reduce quality further
+            while (dataUrl.length > IMAGE_MAX_SIZE_KB * 1024 * 1.37 && quality > 0.3) {
+                quality -= 0.1;
+                dataUrl = canvas.toDataURL('image/jpeg', quality);
+            }
+            
+            // If STILL too large, reduce dimensions further
+            if (dataUrl.length > IMAGE_MAX_SIZE_KB * 1024 * 1.37) {
+                const scale = 0.6;
+                canvas.width = Math.round(width * scale);
+                canvas.height = Math.round(height * scale);
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+            }
+            
+            const originalKB = Math.round(file.size / 1024);
+            const compressedKB = Math.round(dataUrl.length * 0.73 / 1024); // base64 overhead ~37%
+            console.log(`Image compressed: ${originalKB}KB → ${compressedKB}KB (${width}x${height}, q=${quality.toFixed(1)})`);
+            
+            callback(dataUrl);
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
 function handleImageUpload(event, uploadAreaId, hiddenInputId) {
     const file = event.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const dataUrl = e.target.result;
+    
+    const uploadArea = document.getElementById(uploadAreaId);
+    const fileInput = uploadArea.querySelector('input[type="file"]');
+    
+    // Show loading state
+    uploadArea.innerHTML = '<div class="upload-icon">⏳</div><div class="upload-text">Compressing...</div>';
+    uploadArea.appendChild(fileInput);
+    
+    compressImage(file, function(dataUrl) {
         document.getElementById(hiddenInputId).value = dataUrl;
-        const uploadArea = document.getElementById(uploadAreaId);
-        const fileInput = uploadArea.querySelector('input[type="file"]');
         uploadArea.innerHTML = '';
         const img = document.createElement('img');
         img.src = dataUrl;
         img.alt = 'Uploaded';
         uploadArea.appendChild(img);
         uploadArea.appendChild(fileInput);
-    };
-    reader.readAsDataURL(file);
+    });
 }
 
 // ===== MUSIC FUNCTIONS =====
