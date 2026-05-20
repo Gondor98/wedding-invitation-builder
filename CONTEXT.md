@@ -24,7 +24,7 @@
 2. **Section management:** Add, remove, reorder (drag-and-drop), edit via modals
 3. **Image uploads:** Cover photo, timeline photos, gallery photos, QR code (all as base64 data URLs)
 4. **Background music:** Upload audio file or external URL, loop/autoplay options, floating toggle button in export
-5. **Three themes:** "Luxurious Blue" (deep navy + champagne gold), "Spanish Garden" (bright garden greens + warm gold), and "Eucalyptus" (botanical watercolor leaves, sage greens, light cream)
+5. **Four themes:** "Luxurious Blue" (deep navy + champagne gold), "Spanish Garden" (bright garden greens + warm gold), "Eucalyptus" (botanical watercolor leaves, sage greens, light cream), and "Cherry Blossom" (pink sakura flowers, soft rose, romantic)
 6. **Named draft save/load:** Multiple drafts stored in localStorage with name, date, theme info
 7. **Export:** Downloads standalone HTML file with all styles, images, music, and functional RSVP form embedded
 8. **Google Sheets RSVP:** Form submits to GuestConfirm tab via Apps Script webhook
@@ -66,6 +66,17 @@
 - All sections: floating leaf pattern + eucalyptus branch side decorations
 - RSVP dark: forest green `#3a5a3e`
 - Names use Dancing Script (calligraphy style)
+
+### Cherry Blossom
+- Primary: `#c4748e`, Dark: `#8b4060`, Light: `#e8a0b8`
+- Gold (pink): `#d4839b`, Gold-light: `#f0c0d4`
+- Bg-cream: `#faf8fa`
+- Hero: light lavender-white background (NO gradient), sakura flower SVGs in corners
+- Cards: semi-transparent white `rgba(255,255,255,0.75)`
+- All sections: scattered pink petal pattern + corner cherry blossom decorations
+- RSVP dark: deep rose `#8b4060`
+- Names use Dancing Script, large pink "and" watermark
+- Romantic, soft sakura aesthetic
 
 ## Key Design Decisions
 - Reference format: https://prowedding.vn/thiepdientu/thiep-cuoi-dien-tu/mau-thiep-xanh-luxury/
