@@ -1015,6 +1015,20 @@ function exportHTML() {
             return false;
         }
     <\/script>
+    <script>
+        // Personalize guest name from URL parameter
+        (function() {
+            var params = new URLSearchParams(window.location.search);
+            var guestName = params.get('guest');
+            if (guestName) {
+                var el = document.querySelector('.inv-formal-guest-name');
+                if (el) el.textContent = decodeURIComponent(guestName);
+                // Also pre-fill RSVP name field
+                var rsvpName = document.getElementById('rsvp-name');
+                if (rsvpName) rsvpName.value = decodeURIComponent(guestName);
+            }
+        })();
+    <\/script>
 </body>
 </html>`;
 
@@ -1101,6 +1115,20 @@ function publishInvitation() {
             fetch(webhookUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).then(function() { status.style.display='block'; status.style.color='#e8c48a'; status.textContent=thankMsg; btn.textContent='\u0110\u00e3 g\u1eedi \u2713'; btn.style.background='#2d8f5e'; btn.style.color='white'; form.reset(); }).catch(function() { status.style.display='block'; status.style.color='#e8c48a'; status.textContent=thankMsg; btn.textContent='\u0110\u00e3 g\u1eedi \u2713'; form.reset(); });
             return false;
         }
+    <\/script>
+    <script>
+        // Personalize guest name from URL parameter
+        (function() {
+            var params = new URLSearchParams(window.location.search);
+            var guestName = params.get('guest');
+            if (guestName) {
+                var el = document.querySelector('.inv-formal-guest-name');
+                if (el) el.textContent = decodeURIComponent(guestName);
+                // Also pre-fill RSVP name field
+                var rsvpName = document.getElementById('rsvp-name');
+                if (rsvpName) rsvpName.value = decodeURIComponent(guestName);
+            }
+        })();
     <\/script>
 </body>
 </html>`;
@@ -1430,6 +1458,43 @@ function escapeAttr(text) { return text.replace(/"/g, '&quot;').replace(/'/g, '&
 // ===== RENDER ALL =====
 function renderAll() { renderEditorPanel(); renderPreview(); }
 
+// ===== GUEST LINK GENERATOR =====
+function openGuestLinksModal() {
+    openModal('modal-guest-links');
+}
+
+function generateGuestLinks() {
+    const baseUrl = document.getElementById('guest-link-site').value;
+    const namesText = document.getElementById('guest-names-input').value.trim();
+    
+    if (!namesText) {
+        alert('Please enter at least one guest name.');
+        return;
+    }
+    
+    const names = namesText.split('\n').filter(n => n.trim());
+    const links = names.map(name => {
+        const encoded = encodeURIComponent(name.trim());
+        return name.trim() + '\n  ' + baseUrl + '?guest=' + encoded;
+    }).join('\n\n');
+    
+    document.getElementById('guest-links-result').value = links;
+    document.getElementById('guest-links-output').style.display = 'block';
+}
+
+function copyGuestLinks() {
+    const textarea = document.getElementById('guest-links-result');
+    textarea.select();
+    document.execCommand('copy');
+    
+    // Also try modern API
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(textarea.value);
+    }
+    
+    alert('Links copied to clipboard!');
+}
+
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('btn-add-section').addEventListener('click', () => openModal('modal-add-section'));
@@ -1438,6 +1503,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('btn-publish').addEventListener('click', publishInvitation);
     document.getElementById('btn-save').addEventListener('click', openSaveModal);
     document.getElementById('btn-load').addEventListener('click', openLoadModal);
+    document.getElementById('btn-guest-links').addEventListener('click', openGuestLinksModal);
     document.getElementById('btn-music').addEventListener('click', openMusicModal);
     document.getElementById('btn-save-section').addEventListener('click', saveCurrentSection);
 

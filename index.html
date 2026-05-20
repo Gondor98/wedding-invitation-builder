@@ -36,6 +36,7 @@
                 </button>
             </div>
             <div class="toolbar-right">
+                <button id="btn-guest-links" class="toolbar-btn" title="Guest Links">&#128279; Links</button>
                 <button id="btn-music" class="toolbar-btn" title="Background Music">&#127925; Music</button>
                 <button id="btn-save" class="toolbar-btn" title="Save Draft">&#128190; Save</button>
                 <button id="btn-load" class="toolbar-btn" title="Load Draft">&#128194; Load</button>
@@ -240,3 +241,36 @@
     <script src="app.js"></script>
 </body>
 </html>
+
+        <!-- Guest Links Modal -->
+        <div class="modal-overlay" id="modal-guest-links" style="display:none;">
+            <div class="modal modal-large">
+                <div class="modal-header">
+                    <h3>&#128279; Guest Link Generator</h3>
+                    <button class="modal-close" onclick="closeModal('modal-guest-links')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p style="font-size:0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+                        Enter guest names (one per line) to generate personalized invitation links.
+                        Each guest will see their name on the invitation.
+                    </p>
+                    <div class="form-group">
+                        <label>Base URL</label>
+                        <select id="guest-link-site" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius);font-family:var(--font-body);">
+                            <option value="https://gondor98.github.io/wedding/">https://gondor98.github.io/wedding/</option>
+                            <option value="https://gondor98.github.io/wedding-2/">https://gondor98.github.io/wedding-2/</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Guest Names (one per line)</label>
+                        <textarea id="guest-names-input" rows="8" placeholder="Gia đình bạn Ngọc Quyên&#10;Anh Minh Tuấn&#10;Chị Thu Hà&#10;Bạn Hoàng Mai"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="generateGuestLinks()" style="width:100%;margin-bottom:16px;">Generate Links</button>
+                    <div class="form-group" id="guest-links-output" style="display:none;">
+                        <label>Generated Links (click to copy all)</label>
+                        <textarea id="guest-links-result" rows="8" readonly style="font-size:0.8rem;"></textarea>
+                        <button class="btn btn-secondary" onclick="copyGuestLinks()" style="margin-top:8px;width:100%;">&#128203; Copy All Links</button>
+                    </div>
+                </div>
+            </div>
+        </div>
