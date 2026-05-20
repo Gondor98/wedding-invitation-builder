@@ -865,15 +865,36 @@ function exportHTML() {
     </button>`;
         musicScript = `
     <script>
-        const audio = document.getElementById('bg-music');
-        const toggleBtn = document.getElementById('music-toggle');
-        const iconOn = document.getElementById('music-icon-on');
-        const iconOff = document.getElementById('music-icon-off');
-        let musicPlaying = false;
-        function playMusic() { audio.play().then(() => { musicPlaying = true; iconOn.style.display = 'block'; iconOff.style.display = 'none'; toggleBtn.classList.add('playing'); }).catch(() => {}); }
-        function stopMusic() { audio.pause(); musicPlaying = false; iconOn.style.display = 'none'; iconOff.style.display = 'block'; toggleBtn.classList.remove('playing'); }
-        toggleBtn.addEventListener('click', function(e) { e.stopPropagation(); if (musicPlaying) stopMusic(); else playMusic(); });
-        ${musicSettings.autoplay ? `let hasInteracted = false; function onFirstInteraction() { if (!hasInteracted) { hasInteracted = true; playMusic(); document.removeEventListener('click', onFirstInteraction); document.removeEventListener('touchstart', onFirstInteraction); document.removeEventListener('scroll', onFirstInteraction); } } document.addEventListener('click', onFirstInteraction); document.addEventListener('touchstart', onFirstInteraction); document.addEventListener('scroll', onFirstInteraction);` : ''}
+        (function() {
+            var audio = document.getElementById('bg-music');
+            var toggleBtn = document.getElementById('music-toggle');
+            var iconOn = document.getElementById('music-icon-on');
+            var iconOff = document.getElementById('music-icon-off');
+            if (!audio || !toggleBtn) return;
+            var musicPlaying = false;
+            function updateUI(playing) {
+                musicPlaying = playing;
+                if (playing) {
+                    iconOn.style.display = 'block';
+                    iconOff.style.display = 'none';
+                    toggleBtn.classList.add('playing');
+                } else {
+                    iconOn.style.display = 'none';
+                    iconOff.style.display = 'block';
+                    toggleBtn.classList.remove('playing');
+                }
+            }
+            function playMusic() {
+                var p = audio.play();
+                if (p && p.then) {
+                    p.then(function() { updateUI(true); }).catch(function(err) { console.log('Play blocked:', err); });
+                }
+            }
+            function stopMusic() { audio.pause(); updateUI(false); }
+            function toggleMusic() { if (musicPlaying) { stopMusic(); } else { playMusic(); } }
+            toggleBtn.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); toggleMusic(); });
+            ${musicSettings.autoplay ? `var hasInteracted = false; function onFirstInteraction(e) { if (hasInteracted) return; if (e.target === toggleBtn || toggleBtn.contains(e.target)) return; hasInteracted = true; playMusic(); document.removeEventListener('click', onFirstInteraction, true); document.removeEventListener('touchstart', onFirstInteraction, true); document.removeEventListener('scroll', onFirstInteraction, true); } document.addEventListener('click', onFirstInteraction, true); document.addEventListener('touchstart', onFirstInteraction, true); document.addEventListener('scroll', onFirstInteraction, true);` : ''}
+        })();
     <\/script>`;
     }
 
