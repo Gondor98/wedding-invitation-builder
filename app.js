@@ -1105,6 +1105,11 @@ function publishInvitation() {
 </body>
 </html>`;
 
+    // Determine which site to publish to
+    var siteSelect = document.getElementById('publish-site-select');
+    var site = siteSelect ? siteSelect.value : 'wedding';
+    var liveUrl = 'https://gondor98.github.io/' + site + '/';
+
     // Save to local file for the wedding repo
     const blob = new Blob([fullHtml], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
@@ -1114,8 +1119,8 @@ function publishInvitation() {
     a.click();
     URL.revokeObjectURL(url);
 
-    // Show instructions
-    alert('\u2705 File saved as index.html!\n\nTo publish:\n1. Move this file to ~/wedding/ folder\n2. Run in terminal:\n   cd ~/wedding && cp ~/Downloads/index.html . && git add -A && git commit -m "Update invitation" && git push\n\n\u{1F517} Your live URL: https://gondor98.github.io/wedding/');
+    // Show publish instructions
+    alert('\u2705 File saved as index.html!\n\nTo publish to: ' + liveUrl + '\n\nRun in terminal:\n   ~/' + site + '/publish.sh ~/Downloads/index.html\n\nYour invitation will be live in ~30 seconds!');
 }
 
 
