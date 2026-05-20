@@ -24,7 +24,7 @@
 2. **Section management:** Add, remove, reorder (drag-and-drop), edit via modals
 3. **Image uploads:** Cover photo, timeline photos, gallery photos, QR code (all as base64 data URLs)
 4. **Background music:** Upload audio file or external URL, loop/autoplay options, floating toggle button in export
-5. **Two themes:** "Luxurious Blue" (deep navy + champagne gold) and "Spanish Garden" (bright garden greens + warm gold)
+5. **Three themes:** "Luxurious Blue" (deep navy + champagne gold), "Spanish Garden" (bright garden greens + warm gold), and "Eucalyptus" (botanical watercolor leaves, sage greens, light cream)
 6. **Named draft save/load:** Multiple drafts stored in localStorage with name, date, theme info
 7. **Export:** Downloads standalone HTML file with all styles, images, music, and functional RSVP form embedded
 8. **Google Sheets RSVP:** Form submits to GuestConfirm tab via Apps Script webhook
@@ -56,6 +56,16 @@
 - Hero gradient: bright sage-to-green `#3a6b4a → #5a8a5a → #7aa868 → #5a8a4a` (NO brown)
 - Cards: Fresh mint-white `#f8fbf6 → #eef5ea`
 - RSVP dark: forest green `#2e5a3a`
+
+### Eucalyptus
+- Primary: `#5a7a5e`, Dark: `#3a5a3e`, Light: `#7a9a7e`
+- Gold (sage): `#6b8b6e`, Gold-light: `#8aaa8e`
+- Bg-cream: `#f6f8f4`
+- Hero: light cream background (NO gradient), botanical SVG leaves on sides
+- Cards: semi-transparent white `rgba(255,255,255,0.7)`
+- All sections: floating leaf pattern + eucalyptus branch side decorations
+- RSVP dark: forest green `#3a5a3e`
+- Names use Dancing Script (calligraphy style)
 
 ## Key Design Decisions
 - Reference format: https://prowedding.vn/thiepdientu/thiep-cuoi-dien-tu/mau-thiep-xanh-luxury/
