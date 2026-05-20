@@ -1284,7 +1284,18 @@ function getAllDrafts() {
 }
 
 function saveAllDrafts(drafts) {
-    localStorage.setItem('wedding-drafts-collection', JSON.stringify(drafts));
+    try {
+        localStorage.setItem('wedding-drafts-collection', JSON.stringify(drafts));
+        return true;
+    } catch (e) {
+        console.error('Failed to save drafts:', e);
+        if (e.name === 'QuotaExceededError' || e.code === 22 || e.code === 1014) {
+            alert('⚠️ Storage full! Your images/music data is too large for browser storage.\n\nTips:\n• Use smaller images\n• Remove unused photo slots\n• Delete old drafts first (Load → Delete)\n• Music files are not saved in drafts');
+        } else {
+            alert('⚠️ Failed to save draft: ' + e.message);
+        }
+        return false;
+    }
 }
 
 function openSaveModal() {
@@ -1307,12 +1318,20 @@ function saveDraftWithName() {
     
     // Check if name already exists
     const existingIndex = drafts.findIndex(d => d.name === name);
+    // Save music settings but not the base64 audio data (too large for localStorage)
+    const savedMusicSettings = JSON.parse(JSON.stringify(musicSettings));
+    if (savedMusicSettings.sourceType === 'file' && savedMusicSettings.source && savedMusicSettings.source.length > 100000) {
+        savedMusicSettings.source = '';
+        savedMusicSettings.enabled = false;
+        savedMusicSettings._note = 'Audio file too large for storage. Re-upload after loading.';
+    }
+    
     const draftData = {
         name: name,
         savedAt: new Date().toISOString(),
         theme: currentTheme,
         sections: JSON.parse(JSON.stringify(sections)),
-        musicSettings: JSON.parse(JSON.stringify(musicSettings))
+        musicSettings: savedMusicSettings
     };
 
     if (existingIndex >= 0) {
@@ -1325,9 +1344,10 @@ function saveDraftWithName() {
         drafts.unshift(draftData);
     }
 
-    saveAllDrafts(drafts);
-    closeModal('modal-save-draft');
-    alert('Draft "' + name + '" saved successfully!');
+    if (saveAllDrafts(drafts)) {
+        closeModal('modal-save-draft');
+        alert('Draft "' + name + '" saved successfully!');
+    }
 }
 
 function openLoadModal() {
