@@ -1848,3 +1848,285 @@ html, body {
 [data-theme="eucalyptus"] .inv-formal-heart {
     color: #5a7a5e;
 }
+
+/* ===== THEME: CHERRY BLOSSOM ===== */
+[data-theme="cherry-blossom"] {
+    --primary: #c4748e;
+    --primary-light: #e8a0b8;
+    --primary-dark: #8b4060;
+    --gold: #d4839b;
+    --gold-light: #f0c0d4;
+    --bg-cream: #faf8fa;
+    --bg-dark: #8b4060;
+    --text-dark: #2c2c2c;
+    --text-muted: #6b6b6b;
+    --border: #f0dce4;
+    --hero-gradient: none;
+    --ornament-color: rgba(196,116,142,0.3);
+}
+
+/* --- Cherry Blossom: Hero section --- */
+[data-theme="cherry-blossom"] .inv-hero {
+    background: #faf8fa;
+    background-image: none;
+    color: #2c2c2c;
+    padding: 100px 30px 80px;
+    position: relative;
+}
+
+/* Top-left cherry blossom cluster */
+[data-theme="cherry-blossom"] .inv-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 220px;
+    height: 220px;
+    opacity: 0.9;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 220'%3E%3Cdefs%3E%3CradialGradient id='p1'%3E%3Cstop offset='0%25' stop-color='%23fce4ec'/%3E%3Cstop offset='100%25' stop-color='%23f48fb1'/%3E%3C/radialGradient%3E%3CradialGradient id='p2'%3E%3Cstop offset='0%25' stop-color='%23fce4ec'/%3E%3Cstop offset='100%25' stop-color='%23f06292'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cpath d='M30,50 Q25,35 35,30 Q45,25 50,35 Q55,25 65,30 Q75,35 70,50 Q65,60 50,70 Q35,60 30,50Z' fill='%23f8bbd0' opacity='0.9'/%3E%3Ccircle cx='50' cy='45' r='4' fill='%23ffcc80' opacity='0.8'/%3E%3Cpath d='M70,20 Q65,8 75,5 Q85,2 88,12 Q95,5 103,10 Q110,18 105,28 Q98,38 88,44 Q75,36 70,20Z' fill='%23f48fb1' opacity='0.85'/%3E%3Ccircle cx='88' cy='20' r='3.5' fill='%23ffe082' opacity='0.8'/%3E%3Cpath d='M120,40 Q116,28 125,24 Q134,20 137,30 Q143,23 150,27 Q157,34 152,44 Q146,52 137,57 Q126,50 120,40Z' fill='%23f8bbd0' opacity='0.8'/%3E%3Ccircle cx='137' cy='38' r='3' fill='%23ffcc80' opacity='0.7'/%3E%3Cpath d='M10,90 Q6,78 15,74 Q24,70 27,80 Q33,73 40,77 Q47,84 42,94 Q36,102 27,106 Q16,98 10,90Z' fill='%23f48fb1' opacity='0.7'/%3E%3Ccircle cx='27' cy='87' r='3' fill='%23ffe082' opacity='0.7'/%3E%3Cpath d='M80,75 Q77,65 85,62 Q93,59 95,67 Q100,62 106,65 Q112,71 108,79 Q103,86 95,90 Q85,84 80,75Z' fill='%23fce4ec' opacity='0.9'/%3E%3Ccircle cx='95' cy='74' r='2.5' fill='%23ffcc80' opacity='0.7'/%3E%3Cpath d='M145,70 Q142,60 150,57 Q158,54 160,62 Q165,57 171,60 Q177,66 173,74 Q168,81 160,85 Q150,79 145,70Z' fill='%23f8bbd0' opacity='0.65'/%3E%3Ccircle cx='160' cy='68' r='2.5' fill='%23ffe082' opacity='0.6'/%3E%3Cpath d='M50,110 Q47,100 55,97 Q63,94 65,102 Q70,97 76,100 Q82,106 78,114 Q73,121 65,125 Q55,119 50,110Z' fill='%23f48fb1' opacity='0.6'/%3E%3Ccircle cx='65' cy='108' r='2.5' fill='%23ffe082' opacity='0.6'/%3E%3Cpath d='M15,130 Q12,122 18,119 Q24,116 26,122 Q30,118 35,120 Q40,125 37,131 Q33,136 26,139 Q19,135 15,130Z' fill='%23fce4ec' opacity='0.7'/%3E%3Cpath d='M100,110 Q98,103 103,100 Q108,98 110,103 Q113,99 117,101 Q121,105 118,110 Q115,114 110,116 Q104,113 100,110Z' fill='%23f8bbd0' opacity='0.5'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: top left;
+    pointer-events: none;
+}
+
+/* Bottom-right cherry blossom cluster */
+[data-theme="cherry-blossom"] .inv-hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 220px;
+    height: 220px;
+    opacity: 0.9;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 220'%3E%3Cpath d='M190,170 Q185,155 195,150 Q205,145 210,155 Q215,148 223,152 Q230,158 226,170 Q220,180 210,186 Q195,178 190,170Z' fill='%23f8bbd0' opacity='0.9'/%3E%3Ccircle cx='210' cy='165' r='4' fill='%23ffcc80' opacity='0.8'/%3E%3Cpath d='M140,190 Q136,178 145,174 Q154,170 157,180 Q163,173 170,177 Q177,184 172,194 Q166,202 157,206 Q146,198 140,190Z' fill='%23f48fb1' opacity='0.85'/%3E%3Ccircle cx='157' cy='188' r='3.5' fill='%23ffe082' opacity='0.8'/%3E%3Cpath d='M170,140 Q166,128 175,124 Q184,120 187,130 Q193,123 200,127 Q207,134 202,144 Q196,152 187,157 Q176,150 170,140Z' fill='%23f8bbd0' opacity='0.8'/%3E%3Ccircle cx='187' cy='138' r='3' fill='%23ffcc80' opacity='0.7'/%3E%3Cpath d='M110,180 Q107,170 115,167 Q123,164 125,172 Q130,167 136,170 Q142,176 138,184 Q133,191 125,195 Q115,189 110,180Z' fill='%23fce4ec' opacity='0.85'/%3E%3Ccircle cx='125' cy='178' r='2.5' fill='%23ffcc80' opacity='0.7'/%3E%3Cpath d='M180,200 Q177,192 183,189 Q189,186 191,192 Q195,188 200,190 Q205,195 202,201 Q198,206 191,209 Q183,205 180,200Z' fill='%23f48fb1' opacity='0.7'/%3E%3Ccircle cx='191' cy='198' r='2' fill='%23ffe082' opacity='0.6'/%3E%3Cpath d='M125,145 Q122,137 128,134 Q134,131 136,137 Q140,133 145,135 Q150,140 147,146 Q143,151 136,154 Q129,150 125,145Z' fill='%23f8bbd0' opacity='0.6'/%3E%3Ccircle cx='136' cy='143' r='2' fill='%23ffe082' opacity='0.6'/%3E%3Cpath d='M200,115 Q197,107 203,104 Q209,101 211,107 Q215,103 220,105 Q225,110 222,116 Q218,121 211,124 Q203,120 200,115Z' fill='%23fce4ec' opacity='0.6'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    pointer-events: none;
+}
+
+[data-theme="cherry-blossom"] .inv-hero-subtitle {
+    font-family: var(--font-script);
+    font-size: 1.6rem;
+    letter-spacing: 1px;
+    text-transform: none;
+    color: #2c2c2c;
+    font-weight: 400;
+}
+
+[data-theme="cherry-blossom"] .inv-hero-names {
+    font-family: var(--font-script);
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #2c2c2c;
+    line-height: 1.4;
+}
+
+[data-theme="cherry-blossom"] .inv-hero-ampersand {
+    font-family: var(--font-script);
+    font-style: italic;
+    color: #f0a0b8;
+    font-size: 3.5rem;
+    opacity: 0.5;
+    margin: -10px 0;
+}
+
+[data-theme="cherry-blossom"] .inv-hero-date {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: #6b6b6b;
+    letter-spacing: 2px;
+    margin-top: 20px;
+}
+
+[data-theme="cherry-blossom"] .inv-hero-image {
+    border-color: #f0a0b8;
+}
+
+/* --- Cherry Blossom: Section backgrounds --- */
+[data-theme="cherry-blossom"] .inv-section {
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="cherry-blossom"] .inv-formal-invite,
+[data-theme="cherry-blossom"] .inv-love-story,
+[data-theme="cherry-blossom"] .inv-invitation,
+[data-theme="cherry-blossom"] .inv-thank-you,
+[data-theme="cherry-blossom"] .inv-gallery,
+[data-theme="cherry-blossom"] .inv-custom {
+    background-color: #faf8fa;
+    border-top: none;
+    border-bottom: none;
+}
+
+/* Top-left blossom decoration for sections */
+[data-theme="cherry-blossom"] .inv-formal-invite::before,
+[data-theme="cherry-blossom"] .inv-love-story::before,
+[data-theme="cherry-blossom"] .inv-invitation::before,
+[data-theme="cherry-blossom"] .inv-thank-you::before,
+[data-theme="cherry-blossom"] .inv-gallery::before,
+[data-theme="cherry-blossom"] .inv-custom::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 150px;
+    height: 150px;
+    opacity: 0.6;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 150'%3E%3Cpath d='M20,40 Q16,28 25,24 Q34,20 37,30 Q43,23 50,27 Q57,34 52,44 Q46,52 37,57 Q26,50 20,40Z' fill='%23f8bbd0' opacity='0.7'/%3E%3Ccircle cx='37' cy='38' r='3' fill='%23ffcc80' opacity='0.6'/%3E%3Cpath d='M60,15 Q57,6 64,3 Q71,0 73,7 Q78,2 83,5 Q88,10 85,17 Q80,23 73,26 Q64,21 60,15Z' fill='%23f48fb1' opacity='0.6'/%3E%3Ccircle cx='73' cy='13' r='2.5' fill='%23ffe082' opacity='0.5'/%3E%3Cpath d='M5,70 Q2,62 8,59 Q14,56 16,62 Q20,58 25,60 Q30,65 27,71 Q23,76 16,79 Q9,75 5,70Z' fill='%23fce4ec' opacity='0.6'/%3E%3Cpath d='M45,60 Q43,54 47,52 Q51,50 53,54 Q56,51 59,53 Q62,56 60,60 Q57,63 53,65 Q47,63 45,60Z' fill='%23f8bbd0' opacity='0.5'/%3E%3Ccircle cx='53' cy='57' r='2' fill='%23ffcc80' opacity='0.4'/%3E%3Cpath d='M90,30 Q88,24 92,22 Q96,20 98,24 Q101,21 104,23 Q107,26 105,30 Q102,33 98,35 Q92,33 90,30Z' fill='%23f48fb1' opacity='0.4'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: top left;
+}
+
+/* Bottom-right blossom decoration for sections */
+[data-theme="cherry-blossom"] .inv-formal-invite::after,
+[data-theme="cherry-blossom"] .inv-love-story::after,
+[data-theme="cherry-blossom"] .inv-invitation::after,
+[data-theme="cherry-blossom"] .inv-thank-you::after,
+[data-theme="cherry-blossom"] .inv-gallery::after,
+[data-theme="cherry-blossom"] .inv-custom::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 150px;
+    height: 150px;
+    opacity: 0.6;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 150'%3E%3Cpath d='M130,110 Q126,98 135,94 Q144,90 147,100 Q153,93 160,97 Q167,104 162,114 Q156,122 147,127 Q136,120 130,110Z' fill='%23f8bbd0' opacity='0.7'/%3E%3Ccircle cx='147' cy='108' r='3' fill='%23ffcc80' opacity='0.6'/%3E%3Cpath d='M95,130 Q92,122 99,119 Q106,116 108,123 Q113,118 118,121 Q123,127 119,134 Q114,140 108,143 Q99,138 95,130Z' fill='%23f48fb1' opacity='0.6'/%3E%3Ccircle cx='108' cy='129' r='2.5' fill='%23ffe082' opacity='0.5'/%3E%3Cpath d='M135,140 Q133,134 137,132 Q141,130 143,134 Q146,131 149,133 Q152,136 150,140 Q147,143 143,145 Q137,143 135,140Z' fill='%23fce4ec' opacity='0.6'/%3E%3Cpath d='M110,95 Q108,89 112,87 Q116,85 118,89 Q121,86 124,88 Q127,91 125,95 Q122,98 118,100 Q112,98 110,95Z' fill='%23f8bbd0' opacity='0.5'/%3E%3Ccircle cx='118' cy='92' r='2' fill='%23ffcc80' opacity='0.4'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: bottom right;
+}
+
+/* Scattered petals background */
+[data-theme="cherry-blossom"] .inv-formal-invite,
+[data-theme="cherry-blossom"] .inv-invitation,
+[data-theme="cherry-blossom"] .inv-thank-you,
+[data-theme="cherry-blossom"] .inv-gallery,
+[data-theme="cherry-blossom"] .inv-custom {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 500'%3E%3Cellipse cx='80' cy='70' rx='5' ry='3' fill='%23f8bbd0' fill-opacity='0.3' transform='rotate(-30 80 70)'/%3E%3Cellipse cx='420' cy='120' rx='4' ry='2.5' fill='%23f48fb1' fill-opacity='0.2' transform='rotate(20 420 120)'/%3E%3Cellipse cx='200' cy='200' rx='5' ry='3' fill='%23fce4ec' fill-opacity='0.35' transform='rotate(-45 200 200)'/%3E%3Cellipse cx='380' cy='280' rx='4' ry='2.5' fill='%23f8bbd0' fill-opacity='0.25' transform='rotate(35 380 280)'/%3E%3Cellipse cx='120' cy='350' rx='5' ry='3' fill='%23f48fb1' fill-opacity='0.2' transform='rotate(-15 120 350)'/%3E%3Cellipse cx='450' cy='400' rx='4' ry='2.5' fill='%23fce4ec' fill-opacity='0.3' transform='rotate(40 450 400)'/%3E%3Cellipse cx='300' cy='450' rx='5' ry='3' fill='%23f8bbd0' fill-opacity='0.25' transform='rotate(-25 300 450)'/%3E%3Cellipse cx='50' cy='480' rx='4' ry='2.5' fill='%23f48fb1' fill-opacity='0.2' transform='rotate(50 50 480)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 500px 500px;
+}
+
+/* Love story background */
+[data-theme="cherry-blossom"] .inv-love-story {
+    background-color: #faf8fa;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 500'%3E%3Cellipse cx='80' cy='70' rx='5' ry='3' fill='%23f8bbd0' fill-opacity='0.3' transform='rotate(-30 80 70)'/%3E%3Cellipse cx='420' cy='120' rx='4' ry='2.5' fill='%23f48fb1' fill-opacity='0.2' transform='rotate(20 420 120)'/%3E%3Cellipse cx='200' cy='200' rx='5' ry='3' fill='%23fce4ec' fill-opacity='0.35' transform='rotate(-45 200 200)'/%3E%3Cellipse cx='380' cy='280' rx='4' ry='2.5' fill='%23f8bbd0' fill-opacity='0.25' transform='rotate(35 380 280)'/%3E%3Cellipse cx='120' cy='350' rx='5' ry='3' fill='%23f48fb1' fill-opacity='0.2' transform='rotate(-15 120 350)'/%3E%3Cellipse cx='450' cy='400' rx='4' ry='2.5' fill='%23fce4ec' fill-opacity='0.3' transform='rotate(40 450 400)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 500px 500px;
+}
+
+/* --- Cherry Blossom: RSVP section --- */
+[data-theme="cherry-blossom"] .inv-rsvp {
+    background: #8b4060;
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 500'%3E%3Cellipse cx='80' cy='70' rx='6' ry='3.5' fill='%23f8bbd0' fill-opacity='0.1' transform='rotate(-30 80 70)'/%3E%3Cellipse cx='420' cy='120' rx='5' ry='3' fill='%23f48fb1' fill-opacity='0.08' transform='rotate(20 420 120)'/%3E%3Cellipse cx='200' cy='200' rx='6' ry='3.5' fill='%23fce4ec' fill-opacity='0.1' transform='rotate(-45 200 200)'/%3E%3Cellipse cx='380' cy='280' rx='5' ry='3' fill='%23f8bbd0' fill-opacity='0.08' transform='rotate(35 380 280)'/%3E%3Cellipse cx='120' cy='350' rx='6' ry='3.5' fill='%23f48fb1' fill-opacity='0.1' transform='rotate(-15 120 350)'/%3E%3C/svg%3E"),
+        radial-gradient(ellipse at 10% 20%, rgba(196,116,142,0.3) 0%, transparent 40%),
+        radial-gradient(ellipse at 90% 80%, rgba(240,160,184,0.15) 0%, transparent 40%);
+}
+
+/* --- Cherry Blossom: Card style --- */
+[data-theme="cherry-blossom"] .inv-card {
+    background: rgba(255,255,255,0.75);
+    border: 1px solid rgba(196,116,142,0.15);
+}
+
+/* --- Cherry Blossom: Typography --- */
+[data-theme="cherry-blossom"] .inv-formal-heading {
+    color: #8b4060;
+}
+
+[data-theme="cherry-blossom"] .inv-formal-guest-name {
+    color: #8b4060;
+}
+
+[data-theme="cherry-blossom"] .inv-formal-couple-name {
+    color: #2c2c2c;
+}
+
+[data-theme="cherry-blossom"] .inv-formal-divider {
+    color: #e8a0b8;
+}
+
+[data-theme="cherry-blossom"] .inv-formal-divider::before,
+[data-theme="cherry-blossom"] .inv-formal-divider::after {
+    background: linear-gradient(to right, transparent, #e8a0b8, transparent);
+}
+
+[data-theme="cherry-blossom"] .inv-formal-message {
+    color: #c4748e;
+}
+
+[data-theme="cherry-blossom"] .inv-section-label {
+    color: #c4748e;
+}
+
+[data-theme="cherry-blossom"] .inv-section-title {
+    color: #2c2c2c;
+}
+
+[data-theme="cherry-blossom"] .inv-timeline::before {
+    background: #e8a0b8;
+}
+
+[data-theme="cherry-blossom"] .inv-timeline-item::before {
+    background: #e8a0b8;
+    box-shadow: 0 0 0 2px #e8a0b8;
+}
+
+[data-theme="cherry-blossom"] .inv-timeline-date {
+    color: #c4748e;
+}
+
+[data-theme="cherry-blossom"] .inv-card-label {
+    color: #c4748e;
+}
+
+[data-theme="cherry-blossom"] .inv-card-venue-name {
+    color: #8b4060;
+}
+
+[data-theme="cherry-blossom"] .inv-rsvp-btn {
+    background: #e8a0b8;
+    color: #8b4060;
+}
+
+[data-theme="cherry-blossom"] .inv-rsvp-qr-label {
+    color: #f0c0d4;
+}
+
+/* --- Cherry Blossom: Formal invite border --- */
+[data-theme="cherry-blossom"] .inv-formal-invite {
+    border-top: 2px solid #e8a0b8;
+}
+
+/* --- Cherry Blossom: Thank You border --- */
+[data-theme="cherry-blossom"] .inv-thank-you {
+    border-bottom: 2px solid #e8a0b8;
+}
+
+/* --- Cherry Blossom: Heart color --- */
+[data-theme="cherry-blossom"] .inv-formal-heart {
+    color: #e8a0b8;
+}
+
+/* --- Cherry Blossom: Section title decorative dividers --- */
+[data-theme="cherry-blossom"] .inv-love-story .inv-section-title::after,
+[data-theme="cherry-blossom"] .inv-invitation .inv-invitation-subtitle::after,
+[data-theme="cherry-blossom"] .inv-gallery .inv-section-title::after,
+[data-theme="cherry-blossom"] .inv-thank-you .inv-section-title::after {
+    content: '\2022  \273B  \2022';
+    color: #e8a0b8;
+}
+
+/* --- Cherry Blossom: Music toggle --- */
+[data-theme="cherry-blossom"] .music-toggle {
+    background: #c4748e;
+    border-color: #e8a0b8;
+}
