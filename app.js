@@ -911,17 +911,98 @@ function renderRSVPForExport(data) {
         </section>`;
 }
 
-// ===== EXPORT WITH MUSIC =====
-function exportHTML() {
-    const previewHtml = sections.map(section => {
-        if (section.type === 'rsvp') return renderRSVPForExport(section.data);
-        return renderSectionPreview(section);
-    }).join('');
+// ===== SPLASH SCREEN + MUSIC GENERATION =====
+function getSplashHtml() {
+    const heroSection = sections.find(s => s.type === 'hero');
+    const name1 = heroSection ? heroSection.data.name1 : 'Bride';
+    const name2 = heroSection ? heroSection.data.name2 : 'Groom';
+    const date = heroSection ? heroSection.data.date : '';
+    const heroImage = heroSection ? heroSection.data.heroImage : '';
+    const hasMusic = musicSettings.enabled && musicSettings.source;
+    const heroImgHtml = heroImage ? `<img class="splash-photo" src="${heroImage}" alt="Couple">` : '';
+    return `
+    <div id="splash-screen" class="splash-screen">
+        <div class="splash-content">
+            <div class="splash-ornament-top"></div>
+            ${heroImgHtml}
+            <div class="splash-subtitle">Wedding Invitation</div>
+            <div class="splash-names">${name1}<span class="splash-amp">&amp;</span>${name2}</div>
+            <div class="splash-date">${date}</div>
+            <button id="splash-open-btn" class="splash-open-btn">
+                <span class="splash-btn-icon">\ud83d\udc8c</span>
+                <span class="splash-btn-text">M\u1edf Thi\u1ec7p</span>
+            </button>
+            ${hasMusic ? '<div class="splash-music-hint">\ud83c\udfb5 Thi\u1ec7p c\u00f3 nh\u1ea1c n\u1ec1n</div>' : ''}
+            <div class="splash-ornament-bottom"></div>
+        </div>
+    </div>`;
+}
 
-    let musicHtml = '';
-    let musicScript = '';
-    if (musicSettings.enabled && musicSettings.source) {
-        musicHtml = `
+function getSplashStyles() {
+    return `
+        .splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99999; display: flex; align-items: center; justify-content: center; background: var(--bg-cream, #f5f7fa); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .splash-screen.hidden { opacity: 0; transform: scale(1.05); pointer-events: none; }
+        .splash-content { text-align: center; padding: 40px 30px; max-width: 380px; width: 90%; }
+        .splash-ornament-top, .splash-ornament-bottom { width: 80px; height: 2px; background: linear-gradient(to right, transparent, var(--gold, #b8965a), transparent); margin: 0 auto 24px; }
+        .splash-ornament-bottom { margin: 24px auto 0; }
+        .splash-photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--gold, #b8965a); margin-bottom: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .splash-subtitle { font-family: var(--font-body, 'Montserrat', sans-serif); font-size: 0.7rem; letter-spacing: 4px; text-transform: uppercase; color: var(--gold, #b8965a); margin-bottom: 12px; }
+        .splash-names { font-family: var(--font-script, 'Dancing Script', cursive); font-size: 2.4rem; color: var(--primary-dark, #0d1f3d); line-height: 1.3; margin-bottom: 8px; }
+        .splash-amp { display: block; font-family: var(--font-elegant, 'Cormorant Garamond', serif); font-size: 1.6rem; color: var(--gold, #b8965a); margin: 4px 0; }
+        .splash-date { font-family: var(--font-elegant, 'Cormorant Garamond', serif); font-size: 1rem; color: var(--text-muted, #6b6b6b); letter-spacing: 1px; margin-bottom: 32px; }
+        .splash-open-btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 36px; background: var(--primary, #1a3a6b); color: white; border: none; border-radius: 50px; font-family: var(--font-body, 'Montserrat', sans-serif); font-size: 0.9rem; font-weight: 600; letter-spacing: 1px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 20px rgba(0,0,0,0.15); animation: splash-pulse 2s infinite; }
+        .splash-open-btn:hover { transform: scale(1.05); box-shadow: 0 6px 28px rgba(0,0,0,0.2); }
+        .splash-open-btn:active { transform: scale(0.97); }
+        .splash-btn-icon { font-size: 1.2rem; }
+        .splash-btn-text { text-transform: uppercase; }
+        .splash-music-hint { font-family: var(--font-body, 'Montserrat', sans-serif); font-size: 0.7rem; color: var(--text-muted, #6b6b6b); margin-top: 16px; opacity: 0.7; }
+        @keyframes splash-pulse { 0%, 100% { box-shadow: 0 4px 20px rgba(0,0,0,0.15); } 50% { box-shadow: 0 4px 30px rgba(0,0,0,0.25); } }
+        .invitation-wrapper { opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease 0.3s, transform 0.8s ease 0.3s; }
+        .invitation-wrapper.revealed { opacity: 1; transform: translateY(0); }
+    `;
+}
+
+function getSplashScript() {
+    const hasMusic = musicSettings.enabled && musicSettings.source && musicSettings.autoplay;
+    return `
+    <script>
+        (function() {
+            var splash = document.getElementById('splash-screen');
+            var openBtn = document.getElementById('splash-open-btn');
+            var wrapper = document.querySelector('.invitation-wrapper');
+            if (!splash || !openBtn) return;
+            function openInvitation(e) {
+                if (e) { e.preventDefault(); e.stopPropagation(); }
+                splash.classList.add('hidden');
+                wrapper.classList.add('revealed');
+                ${hasMusic ? `
+                var audio = document.getElementById('bg-music');
+                if (audio) {
+                    audio.load();
+                    var p = audio.play();
+                    if (p && p.then) {
+                        p.then(function() {
+                            var iconOn = document.getElementById('music-icon-on');
+                            var iconOff = document.getElementById('music-icon-off');
+                            var toggleBtn = document.getElementById('music-toggle');
+                            if (iconOn) iconOn.style.display = 'block';
+                            if (iconOff) iconOff.style.display = 'none';
+                            if (toggleBtn) toggleBtn.classList.add('playing');
+                            window.__musicPlaying = true;
+                        }).catch(function(err) { console.log('Play blocked:', err); });
+                    }
+                }` : ''}
+                setTimeout(function() { splash.remove(); }, 1000);
+            }
+            openBtn.addEventListener('click', openInvitation);
+            openBtn.addEventListener('touchend', function(e) { e.preventDefault(); openInvitation(e); });
+        })();
+    <\/script>`;
+}
+
+function getMusicHtml() {
+    if (!musicSettings.enabled || !musicSettings.source) return '';
+    return `
     <audio id="bg-music" ${musicSettings.loop ? 'loop' : ''} preload="auto" playsinline>
         <source src="${musicSettings.source}">
     </audio>
@@ -929,7 +1010,11 @@ function exportHTML() {
         <svg id="music-icon-on" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
         <svg id="music-icon-off" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><line x1="1" y1="1" x2="23" y2="23" stroke="red" stroke-width="2"/></svg>
     </button>`;
-        musicScript = `
+}
+
+function getMusicScript() {
+    if (!musicSettings.enabled || !musicSettings.source) return '';
+    return `
     <script>
         (function() {
             var audio = document.getElementById('bg-music');
@@ -937,76 +1022,39 @@ function exportHTML() {
             var iconOn = document.getElementById('music-icon-on');
             var iconOff = document.getElementById('music-icon-off');
             if (!audio || !toggleBtn) return;
-            var musicPlaying = false;
-            
             function updateUI(playing) {
-                musicPlaying = playing;
-                if (playing) {
-                    iconOn.style.display = 'block';
-                    iconOff.style.display = 'none';
-                    toggleBtn.classList.add('playing');
-                } else {
-                    iconOn.style.display = 'none';
-                    iconOff.style.display = 'block';
-                    toggleBtn.classList.remove('playing');
-                }
+                window.__musicPlaying = playing;
+                if (playing) { iconOn.style.display = 'block'; iconOff.style.display = 'none'; toggleBtn.classList.add('playing'); }
+                else { iconOn.style.display = 'none'; iconOff.style.display = 'block'; toggleBtn.classList.remove('playing'); }
             }
-            
-            function playMusic() {
-                audio.load();
-                var p = audio.play();
-                if (p && p.then) {
-                    p.then(function() { updateUI(true); }).catch(function(err) { 
-                        console.log('Play blocked:', err);
-                        updateUI(false);
-                    });
-                }
-            }
-            
+            function playMusic() { audio.load(); var p = audio.play(); if (p && p.then) { p.then(function() { updateUI(true); }).catch(function(err) { console.log('Play blocked:', err); updateUI(false); }); } }
             function stopMusic() { audio.pause(); updateUI(false); }
-            
-            function toggleMusic() { 
-                if (musicPlaying) { stopMusic(); } else { playMusic(); } 
-            }
-            
-            // Handle audio ending (if not loop)
+            function toggleMusic() { if (window.__musicPlaying) stopMusic(); else playMusic(); }
             audio.addEventListener('ended', function() { updateUI(false); });
             audio.addEventListener('pause', function() { if (!audio.ended) updateUI(false); });
             audio.addEventListener('play', function() { updateUI(true); });
-            
-            // Toggle button with debounce to prevent double-fire on mobile
             var lastToggle = 0;
-            function handleToggle(e) {
-                e.preventDefault(); 
-                e.stopPropagation(); 
-                e.stopImmediatePropagation();
-                var now = Date.now();
-                if (now - lastToggle < 300) return;
-                lastToggle = now;
-                toggleMusic(); 
-            }
+            function handleToggle(e) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); var now = Date.now(); if (now - lastToggle < 300) return; lastToggle = now; toggleMusic(); }
             toggleBtn.addEventListener('click', handleToggle);
             toggleBtn.addEventListener('touchend', handleToggle);
-            
-            ${musicSettings.autoplay ? `var hasInteracted = false; 
-            function onFirstInteraction(e) { 
-                if (hasInteracted) return; 
-                if (e.target === toggleBtn || toggleBtn.contains(e.target)) return; 
-                hasInteracted = true; 
-                playMusic(); 
-                removeListeners(); 
-            }
-            function removeListeners() {
-                document.removeEventListener('click', onFirstInteraction, true); 
-                document.removeEventListener('touchend', onFirstInteraction, true); 
-                document.removeEventListener('scroll', onFirstInteraction, true);
-            }
-            document.addEventListener('click', onFirstInteraction, true); 
-            document.addEventListener('touchend', onFirstInteraction, true); 
-            document.addEventListener('scroll', onFirstInteraction, true);` : ''}
+            if (window.__musicPlaying) updateUI(true);
+            audio.addEventListener('playing', function() { updateUI(true); });
         })();
     <\/script>`;
-    }
+}
+
+// ===== EXPORT HTML =====
+function exportHTML() {
+    const previewHtml = sections.map(section => {
+        if (section.type === 'rsvp') return renderRSVPForExport(section.data);
+        return renderSectionPreview(section);
+    }).join('');
+
+    const musicHtml = getMusicHtml();
+    const musicScript = getMusicScript();
+    const splashHtml = getSplashHtml();
+    const splashScript = getSplashScript();
+    const splashStyles = getSplashStyles();
 
     const fullHtml = `<!DOCTYPE html>
 <html lang="en">
@@ -1015,13 +1063,15 @@ function exportHTML() {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wedding Invitation</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&family=Dancing+Script:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>${getExportStyles()}</style>
+    <style>${getExportStyles()}${splashStyles}</style>
 </head>
 <body>
+    ${splashHtml}
     ${musicHtml}
     <div class="invitation-wrapper" data-theme="${currentTheme}">
         ${previewHtml}
     </div>
+    ${splashScript}
     ${musicScript}
     <script>
         function submitRSVP(event) {
@@ -1084,7 +1134,6 @@ function exportHTML() {
             if (guestName) {
                 var el = document.querySelector('.inv-formal-guest-name');
                 if (el) el.textContent = decodeURIComponent(guestName);
-                // Also pre-fill RSVP name field
                 var rsvpName = document.getElementById('rsvp-name');
                 if (rsvpName) rsvpName.value = decodeURIComponent(guestName);
             }
@@ -1109,40 +1158,11 @@ function publishInvitation() {
         return renderSectionPreview(section);
     }).join('');
 
-    let musicHtml = '';
-    let musicScript = '';
-    if (musicSettings.enabled && musicSettings.source) {
-        musicHtml = `
-    <audio id="bg-music" ${musicSettings.loop ? 'loop' : ''} preload="auto" playsinline>
-        <source src="${musicSettings.source}">
-    </audio>
-    <button id="music-toggle" class="music-toggle" aria-label="Toggle Music">
-        <svg id="music-icon-on" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-        <svg id="music-icon-off" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><line x1="1" y1="1" x2="23" y2="23" stroke="red" stroke-width="2"/></svg>
-    </button>`;
-        musicScript = `
-    <script>
-        (function() {
-            var audio = document.getElementById('bg-music');
-            var toggleBtn = document.getElementById('music-toggle');
-            var iconOn = document.getElementById('music-icon-on');
-            var iconOff = document.getElementById('music-icon-off');
-            if (!audio || !toggleBtn) return;
-            var musicPlaying = false;
-            function updateUI(playing) { musicPlaying = playing; if (playing) { iconOn.style.display='block'; iconOff.style.display='none'; toggleBtn.classList.add('playing'); } else { iconOn.style.display='none'; iconOff.style.display='block'; toggleBtn.classList.remove('playing'); } }
-            function playMusic() { audio.load(); var p = audio.play(); if (p && p.then) { p.then(function() { updateUI(true); }).catch(function() { updateUI(false); }); } }
-            function stopMusic() { audio.pause(); updateUI(false); }
-            function toggleMusic() { if (musicPlaying) stopMusic(); else playMusic(); }
-            audio.addEventListener('ended', function() { updateUI(false); });
-            audio.addEventListener('play', function() { updateUI(true); });
-            var lastToggle = 0;
-            function handleToggle(e) { e.preventDefault(); e.stopPropagation(); var now = Date.now(); if (now - lastToggle < 300) return; lastToggle = now; toggleMusic(); }
-            toggleBtn.addEventListener('click', handleToggle);
-            toggleBtn.addEventListener('touchend', handleToggle);
-            ${musicSettings.autoplay ? `var hasInteracted = false; function onFirstInteraction(e) { if (hasInteracted) return; if (e.target === toggleBtn || toggleBtn.contains(e.target)) return; hasInteracted = true; playMusic(); document.removeEventListener('click', onFirstInteraction, true); document.removeEventListener('touchend', onFirstInteraction, true); document.removeEventListener('scroll', onFirstInteraction, true); } document.addEventListener('click', onFirstInteraction, true); document.addEventListener('touchend', onFirstInteraction, true); document.addEventListener('scroll', onFirstInteraction, true);` : ''}
-        })();
-    <\/script>`;
-    }
+    const musicHtml = getMusicHtml();
+    const musicScript = getMusicScript();
+    const splashHtml = getSplashHtml();
+    const splashScript = getSplashScript();
+    const splashStyles = getSplashStyles();
 
     const fullHtml = `<!DOCTYPE html>
 <html lang="en">
@@ -1154,13 +1174,15 @@ function publishInvitation() {
     <meta property="og:description" content="You are invited to our wedding celebration!">
     <meta property="og:type" content="website">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&family=Dancing+Script:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>${getExportStyles()}</style>
+    <style>${getExportStyles()}${splashStyles}</style>
 </head>
 <body>
+    ${splashHtml}
     ${musicHtml}
     <div class="invitation-wrapper" data-theme="${currentTheme}">
         ${previewHtml}
     </div>
+    ${splashScript}
     ${musicScript}
     <script>
         function submitRSVP(event) {

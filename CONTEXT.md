@@ -39,15 +39,16 @@
 3. **Image uploads:** Cover photo, timeline photos, gallery photos, QR code (all as base64 data URLs, auto-compressed)
 4. **Image compression:** Automatic on upload — max 1200×1200px, JPEG quality 0.75, target max 5 MB per image. Progressive quality reduction if needed.
 5. **Background music:** Upload audio file or external URL, loop/autoplay options, floating toggle button in export. Mobile-compatible (touchend events, debounce, IIFE-wrapped).
-6. **Four themes:** "Luxurious Blue", "Spanish Garden", "Eucalyptus", "Cherry Blossom"
-7. **Named draft save/load:** Multiple drafts stored in localStorage with name, date, theme info. Music files >100KB excluded from drafts. Error handling for quota exceeded.
-8. **Export:** Downloads standalone HTML file with all styles, images, music, and functional RSVP form embedded
-9. **Publish:** Dedicated button + site selector to publish to GitHub Pages (wedding or wedding-2)
-10. **Personalized guest names:** URL parameter `?guest=Name` replaces guest name in Formal Invite section and pre-fills RSVP name field
-11. **Guest Link Generator:** Modal tool to batch-generate personalized invitation links for all guests
-12. **Google Sheets RSVP:** Form submits to GuestConfirm tab via Apps Script webhook
-13. **Vietnamese text:** RSVP form labels are in Vietnamese (all editable)
-14. **Decorations:** Floral SVG corner ornaments, vine side borders, colored gradients, ornamental star dividers, gold accent borders
+7. **Splash/Cover Screen:** "Mở Thiệp" (Open Invitation) screen shown on page load. Guest taps button → music starts immediately (counts as user gesture) + invitation reveals with animation. Themed to match selected theme. Shows couple names, date, and cover photo.
+7. **Four themes:** "Luxurious Blue", "Spanish Garden", "Eucalyptus", "Cherry Blossom"
+8. **Named draft save/load:** Multiple drafts stored in localStorage with name, date, theme info. Music files >100KB excluded from drafts. Error handling for quota exceeded.
+9. **Export:** Downloads standalone HTML file with all styles, images, music, and functional RSVP form embedded
+10. **Publish:** Dedicated button + site selector to publish to GitHub Pages (wedding or wedding-2)
+11. **Personalized guest names:** URL parameter `?guest=Name` replaces guest name in Formal Invite section and pre-fills RSVP name field
+12. **Guest Link Generator:** Modal tool to batch-generate personalized invitation links for all guests
+13. **Google Sheets RSVP:** Form submits to GuestConfirm tab via Apps Script webhook
+14. **Vietnamese text:** RSVP form labels are in Vietnamese (all editable)
+15. **Decorations:** Floral SVG corner ornaments, vine side borders, colored gradients, ornamental star dividers, gold accent borders
 15. **Formal Invite section:** Guest name (personalizable via URL), groom/bride parents' names, family addresses, couple names with roles
 16. **Google Maps embed:** Each invitation card has iframe embed code + clickable fallback link for mobile
 
@@ -118,6 +119,17 @@
 - **Last resort:** Dimensions reduced to 60% if quality reduction insufficient
 - **Loading state:** Shows "⏳ Compressing..." during processing
 - **Console logging:** Reports original vs compressed size
+
+## Splash Screen (Exported HTML)
+- Shows on page load as a full-screen cover
+- Displays couple names, wedding date, and cover photo (from Hero section)
+- "Mở Thiệp" (Open Invitation) button with pulse animation
+- Shows "🎵 Thiệp có nhạc nền" hint if music is enabled
+- On tap: starts music immediately + fades out splash + reveals invitation
+- Uses CSS transitions (opacity 0.8s, transform scale)
+- Removes itself from DOM after animation (setTimeout 1s)
+- Theme-aware: uses CSS variables for colors/fonts
+- Mobile-compatible: both click and touchend handlers with preventDefault
 
 ## Music Player (Exported HTML)
 - IIFE-wrapped, no global scope pollution
@@ -231,3 +243,4 @@
 18. Guest Link Generator tool
 19. Automatic image compression on upload (max 5 MB/image)
 20. Added Site 3 (/wedding-3) for managing 3 invitations simultaneously
+21. Splash/Cover screen with instant music autoplay on "Mở Thiệp" button tap
