@@ -11,11 +11,12 @@
 |------|-------------|----------|--------------|
 | Wedding 1 | https://github.com/Gondor98/wedding | https://gondor98.github.io/wedding/ | `~/wedding/` |
 | Wedding 2 | https://github.com/Gondor98/wedding-2 | https://gondor98.github.io/wedding-2/ | `~/wedding-2/` |
+| Wedding 3 | https://github.com/Gondor98/wedding-3 | https://gondor98.github.io/wedding-3/ | `~/wedding-3/` |
 
 ### Publishing Workflow
 1. In the builder, select target site from dropdown (Site 1 or Site 2)
 2. Click **Publish** → downloads `index.html`
-3. Run in terminal: `~/wedding/publish.sh ~/Downloads/index.html` (or `~/wedding-2/publish.sh`)
+3. Run in terminal: `~/wedding/publish.sh ~/Downloads/index.html` (or `~/wedding-2/publish.sh` or `~/wedding-3/publish.sh`)
 4. Live in ~30 seconds
 
 ## Tech Stack
@@ -229,3 +230,4 @@
 17. Personalized guest names via URL parameters
 18. Guest Link Generator tool
 19. Automatic image compression on upload (max 5 MB/image)
+20. Added Site 3 (/wedding-3) for managing 3 invitations simultaneously
