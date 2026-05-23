@@ -919,6 +919,7 @@ function getSplashHtml() {
     const date = heroSection ? heroSection.data.date : '';
     const heroImage = heroSection ? heroSection.data.heroImage : '';
     const hasMusic = musicSettings.enabled && musicSettings.source;
+    const hasAutoplay = hasMusic && musicSettings.autoplay;
     const heroImgHtml = heroImage ? `<img class="splash-photo" src="${heroImage}" alt="Couple">` : '';
     return `
     <div id="splash-screen" class="splash-screen">
@@ -935,7 +936,43 @@ function getSplashHtml() {
             ${hasMusic ? '<div class="splash-music-hint">\ud83c\udfb5 Thi\u1ec7p c\u00f3 nh\u1ea1c n\u1ec1n</div>' : ''}
             <div class="splash-ornament-bottom"></div>
         </div>
-    </div>`;
+    </div>
+    <script>
+        (function() {
+            var openBtn = document.getElementById('splash-open-btn');
+            if (!openBtn) return;
+            var opened = false;
+            function openInvitation(e) {
+                if (opened) return;
+                opened = true;
+                if (e) { e.preventDefault(); e.stopPropagation(); }
+                var splash = document.getElementById('splash-screen');
+                if (splash) splash.classList.add('hidden');
+                var wrapper = document.querySelector('.invitation-wrapper');
+                if (wrapper) wrapper.classList.add('revealed');
+                ${hasAutoplay ? `
+                var audio = document.getElementById('bg-music');
+                if (audio) {
+                    audio.load();
+                    var p = audio.play();
+                    if (p && p.then) {
+                        p.then(function() {
+                            window.__musicPlaying = true;
+                            var iconOn = document.getElementById('music-icon-on');
+                            var iconOff = document.getElementById('music-icon-off');
+                            var toggleBtn = document.getElementById('music-toggle');
+                            if (iconOn) iconOn.style.display = 'block';
+                            if (iconOff) iconOff.style.display = 'none';
+                            if (toggleBtn) toggleBtn.classList.add('playing');
+                        }).catch(function(err) { console.log('Play blocked:', err); });
+                    }
+                }` : ''}
+                setTimeout(function() { if (splash) splash.remove(); }, 1000);
+            }
+            openBtn.addEventListener('click', openInvitation);
+            openBtn.addEventListener('touchend', function(e) { e.preventDefault(); openInvitation(e); });
+        })();
+    <\/script>`;
 }
 
 function getSplashStyles() {
@@ -962,43 +999,6 @@ function getSplashStyles() {
     `;
 }
 
-function getSplashScript() {
-    const hasMusic = musicSettings.enabled && musicSettings.source && musicSettings.autoplay;
-    return `
-    <script>
-        (function() {
-            var splash = document.getElementById('splash-screen');
-            var openBtn = document.getElementById('splash-open-btn');
-            var wrapper = document.querySelector('.invitation-wrapper');
-            if (!splash || !openBtn) return;
-            function openInvitation(e) {
-                if (e) { e.preventDefault(); e.stopPropagation(); }
-                splash.classList.add('hidden');
-                wrapper.classList.add('revealed');
-                ${hasMusic ? `
-                var audio = document.getElementById('bg-music');
-                if (audio) {
-                    audio.load();
-                    var p = audio.play();
-                    if (p && p.then) {
-                        p.then(function() {
-                            var iconOn = document.getElementById('music-icon-on');
-                            var iconOff = document.getElementById('music-icon-off');
-                            var toggleBtn = document.getElementById('music-toggle');
-                            if (iconOn) iconOn.style.display = 'block';
-                            if (iconOff) iconOff.style.display = 'none';
-                            if (toggleBtn) toggleBtn.classList.add('playing');
-                            window.__musicPlaying = true;
-                        }).catch(function(err) { console.log('Play blocked:', err); });
-                    }
-                }` : ''}
-                setTimeout(function() { splash.remove(); }, 1000);
-            }
-            openBtn.addEventListener('click', openInvitation);
-            openBtn.addEventListener('touchend', function(e) { e.preventDefault(); openInvitation(e); });
-        })();
-    <\/script>`;
-}
 
 function getMusicHtml() {
     if (!musicSettings.enabled || !musicSettings.source) return '';
@@ -1053,7 +1053,6 @@ function exportHTML() {
     const musicHtml = getMusicHtml();
     const musicScript = getMusicScript();
     const splashHtml = getSplashHtml();
-    const splashScript = getSplashScript();
     const splashStyles = getSplashStyles();
 
     const fullHtml = `<!DOCTYPE html>
@@ -1071,7 +1070,6 @@ function exportHTML() {
     <div class="invitation-wrapper" data-theme="${currentTheme}">
         ${previewHtml}
     </div>
-    ${splashScript}
     ${musicScript}
     <script>
         function submitRSVP(event) {
@@ -1161,7 +1159,6 @@ function publishInvitation() {
     const musicHtml = getMusicHtml();
     const musicScript = getMusicScript();
     const splashHtml = getSplashHtml();
-    const splashScript = getSplashScript();
     const splashStyles = getSplashStyles();
 
     const fullHtml = `<!DOCTYPE html>
@@ -1182,7 +1179,6 @@ function publishInvitation() {
     <div class="invitation-wrapper" data-theme="${currentTheme}">
         ${previewHtml}
     </div>
-    ${splashScript}
     ${musicScript}
     <script>
         function submitRSVP(event) {
