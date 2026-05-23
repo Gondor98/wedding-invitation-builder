@@ -948,7 +948,6 @@ function getSplashHtml() {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
                 var splash = document.getElementById('splash-screen');
                 if (splash) splash.classList.add('hidden');
-                document.body.classList.add('splash-opened');
                 ${hasAutoplay ? `
                 var audio = document.getElementById('bg-music');
                 if (audio) {
@@ -993,8 +992,7 @@ function getSplashStyles() {
         .splash-btn-text { text-transform: uppercase; }
         .splash-music-hint { font-family: var(--font-body, 'Montserrat', sans-serif); font-size: 0.7rem; color: var(--text-muted, #6b6b6b); margin-top: 16px; opacity: 0.7; }
         @keyframes splash-pulse { 0%, 100% { box-shadow: 0 4px 20px rgba(0,0,0,0.15); } 50% { box-shadow: 0 4px 30px rgba(0,0,0,0.25); } }
-        .invitation-wrapper { opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease 0.3s, transform 0.8s ease 0.3s; }
-        body.splash-opened .invitation-wrapper { opacity: 1; transform: translateY(0); }
+
     `;
 }
 
